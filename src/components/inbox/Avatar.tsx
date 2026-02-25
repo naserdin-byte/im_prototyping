@@ -49,7 +49,7 @@ export function Avatar({
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <div
-        className="h-full w-full overflow-hidden rounded-full"
+        className="relative h-full w-full overflow-hidden rounded-full"
         style={{ boxShadow: "inset 0 0 0 0.5px rgba(0,0,0,0.12)" }}
       >
         <Image src={src} alt={alt} fill className="object-cover" />

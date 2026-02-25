@@ -1,5 +1,3 @@
-"use client";
-
 import { InboxItem } from "@/types/inbox";
 import { Avatar } from "./Avatar";
 import { InboxLeadingIcon } from "./InboxLeadingIcon";
@@ -7,17 +5,12 @@ import { AlertBadge } from "./AlertBadge";
 
 interface InboxCellProps {
   item: InboxItem;
-  onPress?: (item: InboxItem) => void;
 }
 
-export function InboxCell({ item, onPress }: InboxCellProps) {
+export function InboxCell({ item }: InboxCellProps) {
   const isNotification = item.type === "notification";
   const isDM = item.type === "dm";
 
-  // Figma text styling rules:
-  // - Notification cells: always H4-Medium(500) title + P1-Medium(500) message, both #000
-  // - DM unread: H4-Medium(500) title #000 + P1-Medium(500) message #000
-  // - DM read: H4-Regular(400) title #000 + P1-Regular(400) message rgba(0,0,0,0.48)
   const titleWeight =
     isNotification || item.isUnread ? "font-medium" : "font-normal";
   const messageWeight =
@@ -26,10 +19,7 @@ export function InboxCell({ item, onPress }: InboxCellProps) {
     isNotification || item.isUnread ? "text-black" : "text-black/48";
 
   return (
-    <button
-      className="flex w-full items-center py-2 pr-2 pl-4 text-left transition-colors active:bg-black/5"
-      onClick={() => onPress?.(item)}
-    >
+    <div className="flex w-full items-center py-2 pr-2 pl-4">
       {/* Leading */}
       <div className="shrink-0 pr-3">
         {isNotification ? (
@@ -74,13 +64,13 @@ export function InboxCell({ item, onPress }: InboxCellProps) {
       </div>
 
       {/* Trailing badge */}
-      {item.badgeCount && item.badgeCount > 0 && (
+      {item.badgeCount != null && item.badgeCount > 0 && (
         <div className="shrink-0 pl-3">
           <div className="flex h-[42px] w-[42px] items-center justify-center">
             <AlertBadge count={item.badgeCount} />
           </div>
         </div>
       )}
-    </button>
+    </div>
   );
 }
