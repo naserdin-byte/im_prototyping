@@ -1,46 +1,4 @@
-import { InboxNotificationItem, InboxDMItem, StoryUser } from "@/types/inbox";
-
-export const mockStoryUsers: StoryUser[] = [
-  {
-    id: "s1",
-    name: "Create",
-    avatar: "/images/avatars/avatar-taoo425.png",
-    isRead: true,
-    bubble: "Game night\nthis Friday?",
-  },
-  {
-    id: "s2",
-    name: "Ericaaa",
-    avatar: "/images/avatars/avatar-summer.png",
-    isRead: false,
-  },
-  {
-    id: "s3",
-    name: "Veronica.11",
-    avatar: "/images/avatars/avatar-july.png",
-    isRead: false,
-    bubble: "Vancouver/\nSeattle next\nweek?\u{1F9D1}\u{200D}\u{1F3A4}",
-  },
-  {
-    id: "s4",
-    name: "Toniii335",
-    avatar: "/images/avatars/avatar-pumpkin.png",
-    isRead: false,
-    bubble: "\u{1F525}\u{1F525}",
-  },
-  {
-    id: "s5",
-    name: "pumpkin",
-    avatar: "/images/avatars/avatar-pumpkin.png",
-    isRead: false,
-  },
-  {
-    id: "s6",
-    name: "Megan",
-    avatar: "/images/avatars/avatar-summer.png",
-    isRead: true,
-  },
-];
+import { InboxNotificationItem, InboxDMItem } from "@/types/inbox";
 
 export const mockNotificationItems: InboxNotificationItem[] = [
   {

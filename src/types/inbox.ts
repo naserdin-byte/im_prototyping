@@ -1,5 +1,3 @@
-export type InboxItemType = "notification" | "dm";
-
 export type NotificationVariant = "followers" | "activity" | "system";
 
 export interface InboxNotificationItem {
@@ -28,11 +26,3 @@ export interface InboxDMItem {
 }
 
 export type InboxItem = InboxNotificationItem | InboxDMItem;
-
-export interface StoryUser {
-  id: string;
-  name: string;
-  avatar: string;
-  isRead: boolean;
-  bubble?: string;
-}
