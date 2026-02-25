@@ -64,6 +64,9 @@ export function InboxPage() {
               <InboxCell key={item.id} item={item} />
             ))}
           </div>
+
+          {/* Bottom spacer */}
+          <div className="shrink-0" style={{ height: 24 }} />
         </div>
 
         {/* Bottom Tab Bar */}

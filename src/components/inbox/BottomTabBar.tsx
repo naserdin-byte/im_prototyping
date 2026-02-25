@@ -71,7 +71,7 @@ export function BottomTabBar({ activeTab = "inbox", onTabChange }: BottomTabBarP
   ];
 
   return (
-    <div className="shrink-0 border-t border-black/5 bg-white">
+    <div className="shrink-0 border-t border-black/5 bg-white" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
       <div className="flex h-[49px] items-center justify-around">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;

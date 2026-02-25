@@ -6,7 +6,7 @@ interface NavBarProps {
 
 export function NavBar({ onFilterChange }: NavBarProps) {
   return (
-    <div className="shrink-0 bg-white">
+    <div className="shrink-0 bg-white" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
       <div className="flex h-[47px] items-center justify-between px-4">
         {/* Left - New message */}
         <button className="flex h-[32px] w-[32px] items-center justify-center">
