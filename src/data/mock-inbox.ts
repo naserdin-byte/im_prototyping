@@ -1,4 +1,4 @@
-import { InboxItem, StoryUser } from "@/types/inbox";
+import { InboxNotificationItem, InboxDMItem, StoryUser } from "@/types/inbox";
 
 export const mockStoryUsers: StoryUser[] = [
   {
@@ -42,9 +42,9 @@ export const mockStoryUsers: StoryUser[] = [
   },
 ];
 
-export const mockInboxItems: InboxItem[] = [
+export const mockNotificationItems: InboxNotificationItem[] = [
   {
-    id: "1",
+    id: "n1",
     type: "notification",
     variant: "followers",
     title: "New Followers",
@@ -53,7 +53,7 @@ export const mockInboxItems: InboxItem[] = [
     isUnread: true,
   },
   {
-    id: "2",
+    id: "n2",
     type: "notification",
     variant: "activity",
     title: "Activity",
@@ -62,7 +62,7 @@ export const mockInboxItems: InboxItem[] = [
     isUnread: false,
   },
   {
-    id: "3",
+    id: "n3",
     type: "notification",
     variant: "system",
     title: "System notifications",
@@ -71,8 +71,11 @@ export const mockInboxItems: InboxItem[] = [
     timestamp: "1h",
     isUnread: false,
   },
+];
+
+export const mockDMItems: InboxDMItem[] = [
   {
-    id: "4",
+    id: "dm1",
     type: "dm",
     title: "Taoo425",
     message: "Count me in plzz. But tickets are gonna sell out fast. We should set up a plan.",
@@ -82,7 +85,7 @@ export const mockInboxItems: InboxItem[] = [
     isUnread: true,
   },
   {
-    id: "5",
+    id: "dm2",
     type: "dm",
     title: "Tommy Tang",
     message: "Active now",
@@ -92,7 +95,7 @@ export const mockInboxItems: InboxItem[] = [
     storyRead: false,
   },
   {
-    id: "6",
+    id: "dm3",
     type: "dm",
     title: "summer",
     message: "Active yesterday",
@@ -100,7 +103,7 @@ export const mockInboxItems: InboxItem[] = [
     isUnread: false,
   },
   {
-    id: "7",
+    id: "dm4",
     type: "dm",
     title: "July",
     message: "hello!!!",
@@ -110,7 +113,7 @@ export const mockInboxItems: InboxItem[] = [
     isUnread: true,
   },
   {
-    id: "8",
+    id: "dm5",
     type: "dm",
     title: "pumpkin",
     message: "Hello how r u recently",
@@ -118,7 +121,7 @@ export const mockInboxItems: InboxItem[] = [
     isUnread: false,
   },
   {
-    id: "9",
+    id: "dm6",
     type: "dm",
     title: "Alex",
     message: "Did you see the new episode?",
@@ -128,7 +131,7 @@ export const mockInboxItems: InboxItem[] = [
     isUnread: true,
   },
   {
-    id: "10",
+    id: "dm7",
     type: "dm",
     title: "Megan",
     message: "Omg that's so funny lol 😂",
@@ -137,7 +140,7 @@ export const mockInboxItems: InboxItem[] = [
     isUnread: false,
   },
   {
-    id: "11",
+    id: "dm8",
     type: "dm",
     title: "Joanna",
     message: "Are we still meeting tmr?",
@@ -149,7 +152,7 @@ export const mockInboxItems: InboxItem[] = [
     storyRead: true,
   },
   {
-    id: "12",
+    id: "dm9",
     type: "dm",
     title: "Tommy Tang",
     message: "Sent you a video",
@@ -159,7 +162,7 @@ export const mockInboxItems: InboxItem[] = [
     isOnline: true,
   },
   {
-    id: "13",
+    id: "dm10",
     type: "dm",
     title: "summer",
     message: "The concert was amazing!! 🎶🔥",
@@ -168,7 +171,7 @@ export const mockInboxItems: InboxItem[] = [
     isUnread: false,
   },
   {
-    id: "14",
+    id: "dm11",
     type: "dm",
     title: "Taoo425",
     message: "Check this out haha",
@@ -179,7 +182,7 @@ export const mockInboxItems: InboxItem[] = [
     storyRead: false,
   },
   {
-    id: "15",
+    id: "dm12",
     type: "dm",
     title: "July",
     message: "Happy birthday!! 🎂🎉",
@@ -188,7 +191,7 @@ export const mockInboxItems: InboxItem[] = [
     isUnread: false,
   },
   {
-    id: "16",
+    id: "dm13",
     type: "dm",
     title: "pumpkin",
     message: "Can you send me that recipe?",
@@ -198,7 +201,7 @@ export const mockInboxItems: InboxItem[] = [
     isUnread: true,
   },
   {
-    id: "17",
+    id: "dm14",
     type: "dm",
     title: "Alex",
     message: "Let's plan the trip 🏖️",
@@ -208,7 +211,7 @@ export const mockInboxItems: InboxItem[] = [
     isOnline: true,
   },
   {
-    id: "18",
+    id: "dm15",
     type: "dm",
     title: "Megan",
     message: "Thanks for the help!",
@@ -217,7 +220,7 @@ export const mockInboxItems: InboxItem[] = [
     isUnread: false,
   },
   {
-    id: "19",
+    id: "dm16",
     type: "dm",
     title: "Joanna",
     message: "I'll be there in 10 mins",

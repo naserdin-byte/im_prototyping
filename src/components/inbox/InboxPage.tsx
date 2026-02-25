@@ -1,41 +1,74 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { NavBar } from "./NavBar";
 import { InboxCell } from "./InboxCell";
 import { BottomTabBar } from "./BottomTabBar";
-import { mockInboxItems } from "@/data/mock-inbox";
+import { mockNotificationItems, mockDMItems } from "@/data/mock-inbox";
+
+const DESIGN_WIDTH = 390;
 
 export function InboxPage() {
+  const [layout, setLayout] = useState({ scale: 1, designHeight: 844 });
+
+  useEffect(() => {
+    const update = () => {
+      const scale = window.innerWidth / DESIGN_WIDTH;
+      const designHeight = window.innerHeight / scale;
+      setLayout({ scale, designHeight });
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
   return (
-    <div className="relative mx-auto flex h-dvh w-full max-w-[480px] flex-col overflow-hidden bg-white">
-      {/* Nav Bar */}
-      <NavBar />
+    <div className="h-dvh w-full overflow-hidden bg-black">
+      <div
+        className="flex flex-col overflow-hidden bg-white"
+        style={{
+          width: DESIGN_WIDTH,
+          height: layout.designHeight,
+          transform: `scale(${layout.scale})`,
+          transformOrigin: "top left",
+        }}
+      >
+        {/* Nav Bar */}
+        <NavBar />
 
-      {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto">
-        {/* Story Row - responsive: always show full image */}
-        <div className="w-full shrink-0">
-          <Image
-            src="/images/skylight.png"
-            alt="Stories"
-            width={810}
-            height={306}
-            className="h-auto w-full"
-            priority
-          />
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto">
+          {/* Story Row */}
+          <div className="w-full shrink-0">
+            <Image
+              src="/images/skylight.png"
+              alt="Stories"
+              width={810}
+              height={306}
+              className="h-auto w-full"
+              priority
+            />
+          </div>
+
+          {/* Notification Items */}
+          <div className="flex flex-col">
+            {mockNotificationItems.map((item) => (
+              <InboxCell key={item.id} item={item} />
+            ))}
+          </div>
+
+          {/* DM Items */}
+          <div className="flex flex-col">
+            {mockDMItems.map((item) => (
+              <InboxCell key={item.id} item={item} />
+            ))}
+          </div>
         </div>
 
-        {/* Inbox Items */}
-        <div className="flex flex-col">
-          {mockInboxItems.map((item) => (
-            <InboxCell key={item.id} item={item} />
-          ))}
-        </div>
+        {/* Bottom Tab Bar */}
+        <BottomTabBar />
       </div>
-
-      {/* Bottom Tab Bar */}
-      <BottomTabBar />
     </div>
   );
 }
