@@ -134,3 +134,31 @@
     display: none;
   }
 }
+
+/* iOS-style scrollbar */
+.scrollbar-ios {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.scrollbar-ios::-webkit-scrollbar {
+  width: 2.5px;
+}
+
+.scrollbar-ios::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-ios::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 9999px;
+}
+
+.scrollbar-ios:hover::-webkit-scrollbar-thumb,
+.scrollbar-ios:active::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.scrollbar-ios::-webkit-scrollbar-thumb:active {
+  background: rgba(0, 0, 0, 0.35);
+}

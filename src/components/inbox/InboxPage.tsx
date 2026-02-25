@@ -38,7 +38,7 @@ export function InboxPage() {
         <NavBar />
 
         {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="scrollbar-ios flex-1 overflow-y-auto">
           {/* Story Row */}
           <div className="w-full shrink-0">
             <Image
