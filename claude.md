@@ -26,3 +26,13 @@ const designHeight = window.innerHeight / scale;
 ```
 
 **Do not** use responsive breakpoints or fluid sizing (e.g. `max-w-[480px]`, percentage widths) for page layout. All new pages should follow this scaling pattern.
+
+## NPM Registry
+
+This project uses the **public npm registry** for all dependencies. When running `npm install`, always specify the public registry to avoid lockfile pollution from internal registries:
+
+```bash
+npm install --registry=https://registry.npmjs.org
+```
+
+This ensures `package-lock.json` contains public `resolved` URLs, which is required for v0/Vercel deployment to work correctly.
