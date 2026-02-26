@@ -30,7 +30,6 @@ export const ChatInputBar = forwardRef<ChatInputBarHandle, ChatInputBarProps>(
       if (!trimmed) return;
       onSend(trimmed);
       setText("");
-      inputRef.current?.focus();
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {

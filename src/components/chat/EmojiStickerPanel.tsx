@@ -267,14 +267,39 @@ function EmojiTabContent({
 function StickerGrid({
   stickers,
   onSelect,
+  leadingElement,
 }: {
   stickers: string[];
   onSelect?: (src: string) => void;
+  /** Optional element inserted before the first sticker (e.g. "Add" button) */
+  leadingElement?: React.ReactNode;
 }) {
-  // Split stickers into rows of 4
-  const rows: string[][] = [];
-  for (let i = 0; i < stickers.length; i += 4) {
-    rows.push(stickers.slice(i, i + 4));
+  // Build a flat list: optional leading element + sticker items
+  const items: React.ReactNode[] = [];
+  if (leadingElement) items.push(leadingElement);
+  stickers.forEach((src, i) => {
+    items.push(
+      <button
+        key={`${src}-${i}`}
+        onClick={() => onSelect?.(src)}
+        className="flex items-center justify-center"
+        style={{ width: 72, height: 72, flexShrink: 0 }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          alt={`Sticker ${i + 1}`}
+          style={{ width: 72, height: 72, objectFit: "contain" }}
+          draggable={false}
+        />
+      </button>,
+    );
+  });
+
+  // Split into rows of 4
+  const rows: React.ReactNode[][] = [];
+  for (let i = 0; i < items.length; i += 4) {
+    rows.push(items.slice(i, i + 4));
   }
 
   return (
@@ -288,27 +313,13 @@ function StickerGrid({
             justifyContent: row.length === 4 ? "space-between" : "flex-start",
           }}
         >
-          {row.map((src, i) => (
-            <button
-              key={`${src}-${i}`}
-              onClick={() => onSelect?.(src)}
-              className="flex items-center justify-center"
-              style={{
-                width: 72,
-                height: 72,
-                padding: 0,
-                flexShrink: 0,
-                marginRight: row.length < 4 && i < row.length - 1 ? 24 : 0,
-              }}
+          {row.map((node, i) => (
+            <div
+              key={i}
+              style={{ marginRight: row.length < 4 && i < row.length - 1 ? 24 : 0 }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={src}
-                alt={`Sticker ${rowIdx * 4 + i + 1}`}
-                style={{ width: 72, height: 72, objectFit: "contain" }}
-                draggable={false}
-              />
-            </button>
+              {node}
+            </div>
           ))}
         </div>
       ))}
@@ -330,10 +341,32 @@ function FavouriteTabContent({
         <StickerGrid stickers={RECENT_STICKERS} onSelect={onSelectSticker} />
       </div>
 
-      {/* Favourites stickers */}
+      {/* Favourites stickers — with leading "Add" button per Figma */}
       <div className="flex flex-col" style={{ gap: 12 }}>
         <SectionLabel>Favourites</SectionLabel>
-        <StickerGrid stickers={FAVOURITE_STICKERS} onSelect={onSelectSticker} />
+        <StickerGrid
+          stickers={FAVOURITE_STICKERS}
+          onSelect={onSelectSticker}
+          leadingElement={
+            <button
+              className="flex items-center justify-center"
+              style={{
+                width: 72,
+                height: 72,
+                borderRadius: 12,
+                background: "rgba(0,0,0,0.05)",
+                flexShrink: 0,
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images/icons/icon-plus.png"
+                alt="Add"
+                style={{ width: 28, height: 28, opacity: 0.48 }}
+              />
+            </button>
+          }
+        />
       </div>
     </div>
   );
