@@ -145,6 +145,11 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
     setShowEmojiPanel((prev) => !prev);
   }, []);
 
+  /** Dismiss the emoji panel when tapping outside (messages area, nav bar) */
+  const handleDismissEmojiPanel = useCallback(() => {
+    if (showEmojiPanel) setShowEmojiPanel(false);
+  }, [showEmojiPanel]);
+
   /** Insert emoji from the panel into the text input */
   const handleEmojiSelect = useCallback((emoji: string) => {
     inputBarRef.current?.insertText(emoji);
@@ -178,13 +183,18 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
         }}
       >
         {/* Chat Nav Bar */}
-        <ChatNavBar contact={contact} onBack={onBack} />
+        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+        <div onClick={handleDismissEmojiPanel}>
+          <ChatNavBar contact={contact} onBack={onBack} />
+        </div>
 
         {/* Messages area — min-h-0 is critical for flex child overflow scroll */}
+        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
         <div
           ref={scrollRef}
           className="scrollbar-ios flex-1 overflow-y-auto"
           style={{ minHeight: 0 }}
+          onClick={handleDismissEmojiPanel}
         >
           {/* Profile header */}
           <div className="flex flex-col items-center gap-4 pb-2 pt-5">
