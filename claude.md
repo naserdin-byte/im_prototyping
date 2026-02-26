@@ -27,6 +27,16 @@ const designHeight = window.innerHeight / scale;
 
 **Do not** use responsive breakpoints or fluid sizing (e.g. `max-w-[480px]`, percentage widths) for page layout. All new pages should follow this scaling pattern.
 
+## Icons & Assets
+
+**严格从 Figma 设计稿导出 SVG/PNG，禁止自己手写或编造图标。**
+
+- 所有图标必须通过 Figma MCP 工具从设计稿中导出，保留原始 path data
+- **不要**自己凭感觉画 SVG path、拼凑图标、或用 placeholder 替代
+- 如果 Figma 中图标是矢量（Vector），导出为 SVG
+- 如果 Figma 中图标是光栅化的（rasterized / flattened），导出为 PNG（建议 3x）
+- 导出后放入 `public/images/icons/` 目录
+
 ## NPM / Node Version & Registry
 
 This project deploys on **v0 / Vercel**. To ensure compatibility:
