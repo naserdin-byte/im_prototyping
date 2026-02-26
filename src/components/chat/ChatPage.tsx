@@ -5,8 +5,9 @@ import Image from "next/image";
 import { AnimatePresence } from "motion/react";
 import { ChatNavBar } from "./ChatNavBar";
 import { MessageBubble } from "./MessageBubble";
-import { ChatInputBar } from "./ChatInputBar";
+import { ChatInputBar, ChatInputBarHandle } from "./ChatInputBar";
 import { ReactionPicker } from "./ReactionPicker";
+import { EmojiStickerPanel } from "./EmojiStickerPanel";
 import { ChatContact, ChatMessage, BubblePosition, ReactionEmoji } from "@/types/chat";
 
 const DESIGN_WIDTH = 390;
@@ -50,13 +51,16 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
   const [layout, setLayout] = useState({ scale: 1, designHeight: 844 });
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [picker, setPicker] = useState<PickerState | null>(null);
+  const [showEmojiPanel, setShowEmojiPanel] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const inputBarRef = useRef<ChatInputBarHandle>(null);
 
   // Reset messages when contact changes
   useEffect(() => {
     setMessages(initialMessages);
     setPicker(null);
+    setShowEmojiPanel(false);
   }, [initialMessages]);
 
   useEffect(() => {
@@ -79,6 +83,13 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "instant" });
   }, [initialMessages]);
+
+  // Scroll to bottom when emoji panel opens/closes (messages area resizes)
+  useEffect(() => {
+    setTimeout(() => {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  }, [showEmojiPanel]);
 
   const handleSend = useCallback((text: string) => {
     const now = new Date();
@@ -126,6 +137,16 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
     },
     [picker],
   );
+
+  /** Toggle the emoji & sticker panel */
+  const handleToggleEmojiPanel = useCallback(() => {
+    setShowEmojiPanel((prev) => !prev);
+  }, []);
+
+  /** Insert emoji from the panel into the text input */
+  const handleEmojiSelect = useCallback((emoji: string) => {
+    inputBarRef.current?.insertText(emoji);
+  }, []);
 
   const positions = computePositions(messages);
   const pickerMsgIdx = picker ? messages.findIndex((m) => m.id === picker.msgId) : -1;
@@ -279,8 +300,23 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
           </div>
         </div>
 
-        {/* Input Area */}
-        <ChatInputBar onSend={handleSend} />
+        {/* Input Area — column: input bar + optional emoji panel */}
+        <ChatInputBar
+          ref={inputBarRef}
+          onSend={handleSend}
+          isEmojiPanelOpen={showEmojiPanel}
+          onToggleEmojiPanel={handleToggleEmojiPanel}
+        />
+
+        {/* Emoji & Sticker Panel — slides up below input bar */}
+        <AnimatePresence>
+          {showEmojiPanel && (
+            <EmojiStickerPanel
+              key="emoji-panel"
+              onSelectEmoji={handleEmojiSelect}
+            />
+          )}
+        </AnimatePresence>
 
         {/* ── Reaction picker overlay ── */}
         <AnimatePresence>
