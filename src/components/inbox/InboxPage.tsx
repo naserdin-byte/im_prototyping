@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Image from "next/image";
 import { NavBar } from "./NavBar";
 import { InboxCell } from "./InboxCell";
 import { BottomTabBar } from "./BottomTabBar";
+import { useViewportScale } from "@/hooks/useViewportScale";
 import { mockNotificationItems, mockDMItems } from "@/data/mock-inbox";
 import { InboxDMItem } from "@/types/inbox";
 
@@ -15,21 +15,19 @@ interface InboxPageProps {
 }
 
 export function InboxPage({ onOpenChat }: InboxPageProps) {
-  const [layout, setLayout] = useState({ scale: 1, designHeight: 844 });
-
-  useEffect(() => {
-    const update = () => {
-      const scale = window.innerWidth / DESIGN_WIDTH;
-      const designHeight = window.innerHeight / scale;
-      setLayout({ scale, designHeight });
-    };
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
+  const layout = useViewportScale();
 
   return (
-    <div className="h-dvh w-full overflow-hidden bg-black">
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        width: "100%",
+        height: layout.viewportHeight,
+        overflow: "hidden",
+        background: "#000",
+      }}
+    >
       <div
         className="flex flex-col overflow-hidden bg-white"
         style={{

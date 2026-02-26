@@ -5,6 +5,21 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/*
+ * Lock document scroll — only inner scroll containers should scroll.
+ * `position: fixed` prevents iOS Safari from scrolling the body
+ * when the virtual keyboard opens or the user drags outside a scrollable area.
+ */
+html,
+body {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 /* iOS-style scrollbar */
 .scrollbar-ios {
   scrollbar-width: thin;

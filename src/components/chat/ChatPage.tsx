@@ -8,6 +8,7 @@ import { MessageBubble } from "./MessageBubble";
 import { ChatInputBar, ChatInputBarHandle } from "./ChatInputBar";
 import { ReactionPicker } from "./ReactionPicker";
 import { EmojiStickerPanel } from "./EmojiStickerPanel";
+import { useViewportScale } from "@/hooks/useViewportScale";
 import { ChatContact, ChatMessage, BubblePosition, ReactionEmoji } from "@/types/chat";
 
 const DESIGN_WIDTH = 390;
@@ -48,13 +49,14 @@ interface ChatPageProps {
 }
 
 export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
-  const [layout, setLayout] = useState({ scale: 1, designHeight: 844 });
+  const layout = useViewportScale();
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [picker, setPicker] = useState<PickerState | null>(null);
   const [showEmojiPanel, setShowEmojiPanel] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputBarRef = useRef<ChatInputBarHandle>(null);
+  const prevHeightRef = useRef(layout.viewportHeight);
 
   // Reset messages when contact changes
   useEffect(() => {
@@ -62,17 +64,6 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
     setPicker(null);
     setShowEmojiPanel(false);
   }, [initialMessages]);
-
-  useEffect(() => {
-    const update = () => {
-      const scale = window.innerWidth / DESIGN_WIDTH;
-      const designHeight = window.innerHeight / scale;
-      setLayout({ scale, designHeight });
-    };
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -90,6 +81,18 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100);
   }, [showEmojiPanel]);
+
+  // Scroll to bottom when viewport height shrinks (keyboard opened)
+  useEffect(() => {
+    const prev = prevHeightRef.current;
+    prevHeightRef.current = layout.viewportHeight;
+    // Only scroll when height *shrinks* (keyboard appeared), not when it grows
+    if (layout.viewportHeight < prev) {
+      setTimeout(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 60);
+    }
+  }, [layout.viewportHeight]);
 
   const handleSend = useCallback((text: string) => {
     const now = new Date();
@@ -154,7 +157,16 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
   const pickerPos = pickerMsgIdx >= 0 ? positions[pickerMsgIdx] : "single";
 
   return (
-    <div className="h-dvh w-full overflow-hidden bg-black">
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        width: "100%",
+        height: layout.viewportHeight,
+        overflow: "hidden",
+        background: "#000",
+      }}
+    >
       <div
         className="relative flex flex-col overflow-hidden"
         style={{

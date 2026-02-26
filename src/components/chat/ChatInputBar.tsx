@@ -121,7 +121,13 @@ export const ChatInputBar = forwardRef<ChatInputBarHandle, ChatInputBarProps>(
           ) : isEmojiPanelOpen ? (
             /* Panel-open state: keyboard + image icons */
             <div className="flex shrink-0 items-center" style={{ gap: 14 }}>
-              <button onClick={onToggleEmojiPanel}>
+              <button
+                onClick={() => {
+                  onToggleEmojiPanel?.();
+                  // Focus the text input after the panel closes
+                  requestAnimationFrame(() => inputRef.current?.focus());
+                }}
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/images/icons/icon-cta-keyboard.svg"
