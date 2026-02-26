@@ -158,13 +158,29 @@ const springGentle = { type: "spring", stiffness: 600, damping: 32 };
 <motion.button whileTap={{ scale: 1.35 }} />
 ```
 
-## Screenshots
+## UI 验证流程（必须执行）
 
-开发验证截图统一存放在 **`.screenshots/`** 目录，该目录已被 `.gitignore` 忽略，不会提交到仓库。
+每次修改 UI 后，**必须**通过 Playwright 截图验证渲染结果，确认无误后再继续。
 
-- 用 Playwright `browser_take_screenshot` 截图时，文件会保存到项目根目录
-- 验证完成后，将截图移入 `.screenshots/`：`mv *.png .screenshots/`
-- **不要**将截图提交到 git
+### 步骤
+
+1. **启动 dev server**（如未运行）
+2. **设置手机视口尺寸**：`browser_resize` → width: 390, height: 844（iPhone 14/15 标准尺寸）
+3. **用 Playwright 导航到目标页面**：`browser_navigate` → `http://localhost:3000`
+4. **截图验证**：`browser_take_screenshot` 截取当前视口
+5. **逐项检查**截图是否与预期一致（布局、间距、颜色、文字、图标）
+6. **如有多个页面/状态受影响**，逐一导航并截图（如 Inbox → Chat → 长按 → Emoji 面板）
+7. **确认无误后**，将截图移入 `.screenshots/`：`mv *.png .screenshots/`
+8. **如发现问题**，修复后重新截图验证，直到正确
+
+### 规则
+
+- **必须使用手机尺寸验证** — 先 `browser_resize` 到 390×844，再截图。本项目是移动端 prototype，桌面宽度下的截图没有参考价值
+- **不要**跳过验证直接提交 — UI 改动必须有截图确认
+- **不要**将截图提交到 git — `.screenshots/` 已在 `.gitignore` 中
+- 截图文件统一存放在 **`.screenshots/`** 目录
+- 用 Playwright `browser_take_screenshot` 截图时，文件默认保存到项目根目录，验证后移走
+
 
 ## NPM / Node Version & Registry
 
