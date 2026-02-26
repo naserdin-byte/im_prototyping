@@ -108,7 +108,11 @@ export const ChatInputBar = forwardRef<ChatInputBarHandle, ChatInputBarProps>(
 
           {/* Right side: CTA icons or Send button */}
           {hasText ? (
-            <button onClick={handleSend} className="shrink-0">
+            <button
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={handleSend}
+              className="shrink-0"
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/images/icons/icon-send-button.png"
