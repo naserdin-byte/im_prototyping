@@ -35,15 +35,15 @@ This project deploys on **v0 / Vercel**. To ensure compatibility:
 
 | Tool | Required | Reason |
 |------|----------|--------|
-| Node.js | **≥ 18.18.0** | Next.js 16 minimum; Vercel default runtime |
-| npm | **≥ 9** (lockfileVersion 3) | Matches the existing `package-lock.json` format |
+| Node.js | **20.x** | Vercel 已下线 18.x；20.x 是最稳定的 LTS，Next.js 16 完全兼容 |
+| npm | **≥ 10** (lockfileVersion 3) | Node 20.x 自带 npm 10.x，匹配 `package-lock.json` 格式 |
 
 Add the `engines` field in `package.json` if it doesn't exist:
 
 ```json
 "engines": {
-  "node": ">=18.18.0",
-  "npm": ">=9"
+  "node": "20.x",
+  "npm": ">=10"
 }
 ```
 
