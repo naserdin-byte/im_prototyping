@@ -7,8 +7,8 @@
     "npm": ">=10"
   },
   "scripts": {
-    "predev": "if [ -d /vercel/share ]; then echo '[predev] v0 sandbox detected, forcing clean install...' && rm -rf node_modules && npm install && echo '[predev] clean install done'; fi",
-    "dev": "next dev --webpack",
+    "predev": "if [ -d /vercel/share/v0-project/src ]; then echo '[predev] v0: installing in project dir...' && npm install --prefix /vercel/share/v0-project && echo '[predev] done'; fi",
+    "dev": "if [ -d /vercel/share/v0-project/src ]; then cd /vercel/share/v0-project && exec ./node_modules/.bin/next dev; else next dev; fi",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
