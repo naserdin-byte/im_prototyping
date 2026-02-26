@@ -3,24 +3,28 @@ import fs from "fs";
 import { execSync } from "child_process";
 
 // v0 sandbox workaround:
-// v0 symlinks node_modules → /vercel/share/v0-next-shadcn/node_modules
-// Next.js 16 Turbopack rejects symlinks pointing outside the filesystem root.
-// Replace the symlink with real dependencies before the bundler initializes.
-// next.config.ts is loaded BEFORE webpack/turbopack init, so this runs in time.
+// v0 pre-installs shared dependencies that contaminate node_modules,
+// causing Next.js to fail route discovery (404 on all pages).
+// Detect v0 sandbox and force a clean install from our package.json.
 try {
-  const stat = fs.lstatSync("node_modules");
-  const isLink = stat.isSymbolicLink();
-  console.log(`[next.config] node_modules is: ${isLink ? "SYMLINK" : "REAL DIR"}`);
-  if (isLink) {
-    console.log("[next.config] Replacing symlink...");
-    fs.unlinkSync("node_modules");
+  const isV0 = fs.existsSync("/vercel/share");
+  if (isV0) {
+    const stat = fs.lstatSync("node_modules");
+    const isLink = stat.isSymbolicLink();
+    if (isLink) {
+      console.log("[v0-fix] Symlink detected, removing...");
+      fs.unlinkSync("node_modules");
+    } else {
+      console.log("[v0-fix] Contaminated node_modules detected, cleaning...");
+      fs.rmSync("node_modules", { recursive: true, force: true });
+    }
     execSync("npm install --prefer-offline 2>/dev/null || npm install", {
       stdio: "inherit",
     });
-    console.log("[next.config] Done. Continuing with real node_modules.");
+    console.log("[v0-fix] Clean node_modules ready.");
   }
 } catch (e) {
-  console.log("[next.config] node_modules check error:", e instanceof Error ? e.message : e);
+  console.log("[v0-fix] error:", e instanceof Error ? e.message : e);
 }
 
 const nextConfig: NextConfig = {
