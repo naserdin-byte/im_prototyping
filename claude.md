@@ -47,16 +47,28 @@ Add the `engines` field in `package.json` if it doesn't exist:
 }
 ```
 
-### v0 sandbox symlink workaround
+### v0 sandbox workaround
 
-v0 sandbox 会将 `node_modules` 符号链接到 `/vercel/share/v0-next-shadcn/node_modules`，
-但 Next.js 16 的 Turbopack 不支持跨根 symlink，导致路由编译失败 (404)。
+v0 sandbox 的架构会导致 `next dev` 在**错误的目录**启动：
 
-`package.json` 中的 `predev` 脚本会在 `npm run dev` 前自动检测并替换 symlink：
+| 目录 | 用途 |
+|------|------|
+| `/vercel/share/v0-next-shadcn/` | 共享模板，v0 默认在此运行 `npm run dev` |
+| `/vercel/share/v0-project/` | 我们的实际项目代码（从 GitHub 同步） |
+
+v0 在共享模板目录运行 `next dev`，但我们的 `src/app/page.tsx` 在项目目录，
+导致 Next.js 扫描不到任何路由 → 所有页面 404。
+
+`package.json` 中的 `predev` + `dev` 脚本自动处理：
 
 ```json
-"predev": "if [ -L node_modules ]; then rm node_modules && npm install --prefer-offline 2>/dev/null || npm install; fi"
+"predev": "if [ -d /vercel/share/v0-project/src ]; then npm install --prefix /vercel/share/v0-project; fi",
+"dev": "if [ -d /vercel/share/v0-project/src ]; then cd /vercel/share/v0-project && exec ./node_modules/.bin/next dev; else next dev; fi"
 ```
+
+- **`predev`**: 检测 v0 环境，在项目目录安装依赖
+- **`dev`**: `cd` 到项目目录再启动 `next dev`，确保 Turbopack 扫描正确的 `src/app/`
+- **本地开发不受影响**：检测不到 `/vercel/share/v0-project/src`，直接走 `else next dev`
 
 ### Public registry
 
