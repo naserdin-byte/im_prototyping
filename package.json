@@ -8,7 +8,7 @@
   },
   "scripts": {
     "predev": "if [ -L node_modules ]; then rm node_modules && npm install --prefer-offline 2>/dev/null || npm install; fi",
-    "dev": "next dev",
+    "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
