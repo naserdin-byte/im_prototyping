@@ -7,8 +7,7 @@ import { ChatNavBar } from "./ChatNavBar";
 import { MessageBubble } from "./MessageBubble";
 import { ChatInputBar } from "./ChatInputBar";
 import { ReactionPicker } from "./ReactionPicker";
-import { chatContact, initialMessages } from "@/data/mock-chat";
-import { ChatMessage, BubblePosition, ReactionEmoji } from "@/types/chat";
+import { ChatContact, ChatMessage, BubblePosition, ReactionEmoji } from "@/types/chat";
 
 const DESIGN_WIDTH = 390;
 
@@ -38,12 +37,27 @@ interface PickerState {
   msgId: string;
 }
 
-export function ChatPage() {
+interface ChatPageProps {
+  /** The contact to display — derived from the inbox selection */
+  contact: ChatContact;
+  /** Initial messages for this conversation */
+  initialMessages: ChatMessage[];
+  /** Called when user taps the back button */
+  onBack: () => void;
+}
+
+export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
   const [layout, setLayout] = useState({ scale: 1, designHeight: 844 });
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [picker, setPicker] = useState<PickerState | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Reset messages when contact changes
+  useEffect(() => {
+    setMessages(initialMessages);
+    setPicker(null);
+  }, [initialMessages]);
 
   useEffect(() => {
     const update = () => {
@@ -64,7 +78,7 @@ export function ChatPage() {
   // Initial scroll to bottom
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "instant" });
-  }, []);
+  }, [initialMessages]);
 
   const handleSend = useCallback((text: string) => {
     const now = new Date();
@@ -131,7 +145,7 @@ export function ChatPage() {
         }}
       >
         {/* Chat Nav Bar */}
-        <ChatNavBar contact={chatContact} />
+        <ChatNavBar contact={contact} onBack={onBack} />
 
         {/* Messages area — min-h-0 is critical for flex child overflow scroll */}
         <div
@@ -142,8 +156,8 @@ export function ChatPage() {
           {/* Profile header */}
           <div className="flex flex-col items-center gap-4 pb-2 pt-5">
             <Image
-              src={chatContact.avatar}
-              alt={chatContact.name}
+              src={contact.avatar}
+              alt={contact.name}
               width={96}
               height={96}
               className="rounded-full object-cover"
@@ -158,7 +172,7 @@ export function ChatPage() {
                   color: "#202020",
                 }}
               >
-                {chatContact.name}
+                {contact.name}
               </span>
               <div className="flex flex-col items-center gap-0.5">
                 <span
@@ -168,26 +182,30 @@ export function ChatPage() {
                     color: "rgba(0,0,0,0.65)",
                   }}
                 >
-                  {chatContact.handle}
+                  {contact.handle}
                 </span>
-                <span
-                  style={{
-                    fontSize: 14,
-                    lineHeight: "1.3em",
-                    color: "rgba(0,0,0,0.65)",
-                  }}
-                >
-                  {chatContact.stats}
-                </span>
-                <span
-                  style={{
-                    fontSize: 14,
-                    lineHeight: "1.3em",
-                    color: "rgba(0,0,0,0.65)",
-                  }}
-                >
-                  {chatContact.mutualInfo}
-                </span>
+                {contact.stats && (
+                  <span
+                    style={{
+                      fontSize: 14,
+                      lineHeight: "1.3em",
+                      color: "rgba(0,0,0,0.65)",
+                    }}
+                  >
+                    {contact.stats}
+                  </span>
+                )}
+                {contact.mutualInfo && (
+                  <span
+                    style={{
+                      fontSize: 14,
+                      lineHeight: "1.3em",
+                      color: "rgba(0,0,0,0.65)",
+                    }}
+                  >
+                    {contact.mutualInfo}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -233,7 +251,7 @@ export function ChatPage() {
                     message={msg}
                     position={pos}
                     showAvatar={showAvatar}
-                    contactAvatar={chatContact.avatar}
+                    contactAvatar={contact.avatar}
                     onLongPress={handleLongPress}
                   />
 

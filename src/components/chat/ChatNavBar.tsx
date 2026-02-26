@@ -1,12 +1,12 @@
 import Image from "next/image";
-import Link from "next/link";
 import { ChatContact } from "@/types/chat";
 
-interface ChatNavBarProps {
+export interface ChatNavBarProps {
   contact: ChatContact;
+  onBack?: () => void;
 }
 
-export function ChatNavBar({ contact }: ChatNavBarProps) {
+export function ChatNavBar({ contact, onBack }: ChatNavBarProps) {
   return (
     <div
       className="relative shrink-0"
@@ -19,8 +19,8 @@ export function ChatNavBar({ contact }: ChatNavBarProps) {
       {/* Left: Back + Avatar */}
       <div className="absolute left-0 top-0 flex h-full items-center">
         {/* Back button */}
-        <Link
-          href="/"
+        <button
+          onClick={onBack}
           className="flex items-center justify-center"
           style={{ width: 52, height: 56 }}
         >
@@ -31,7 +31,7 @@ export function ChatNavBar({ contact }: ChatNavBarProps) {
             width={24}
             height={24}
           />
-        </Link>
+        </button>
 
         {/* Avatar with online dot */}
         <div className="relative" style={{ width: 40, height: 40 }}>

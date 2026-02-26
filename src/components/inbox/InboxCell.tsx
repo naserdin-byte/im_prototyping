@@ -1,14 +1,15 @@
-import Link from "next/link";
-import { InboxItem } from "@/types/inbox";
+import { InboxItem, InboxDMItem } from "@/types/inbox";
 import { Avatar } from "./Avatar";
 import { InboxLeadingIcon } from "./InboxLeadingIcon";
 import { AlertBadge } from "./AlertBadge";
 
 interface InboxCellProps {
   item: InboxItem;
+  /** Called when a DM cell is tapped — passes the DM item for the chat page */
+  onOpenChat?: (dm: InboxDMItem) => void;
 }
 
-export function InboxCell({ item }: InboxCellProps) {
+export function InboxCell({ item, onOpenChat }: InboxCellProps) {
   const isNotification = item.type === "notification";
   const isDM = item.type === "dm";
 
@@ -77,11 +78,14 @@ export function InboxCell({ item }: InboxCellProps) {
 
   const className = "flex w-full items-center py-2 pr-2 pl-4";
 
-  if (isDM) {
+  if (isDM && onOpenChat) {
     return (
-      <Link href="/chat/taoo425" className={className}>
+      <button
+        onClick={() => onOpenChat(item)}
+        className={`${className} cursor-pointer text-left active:bg-black/5`}
+      >
         {inner}
-      </Link>
+      </button>
     );
   }
 

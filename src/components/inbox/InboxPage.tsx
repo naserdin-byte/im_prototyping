@@ -6,10 +6,15 @@ import { NavBar } from "./NavBar";
 import { InboxCell } from "./InboxCell";
 import { BottomTabBar } from "./BottomTabBar";
 import { mockNotificationItems, mockDMItems } from "@/data/mock-inbox";
+import { InboxDMItem } from "@/types/inbox";
 
 const DESIGN_WIDTH = 390;
 
-export function InboxPage() {
+interface InboxPageProps {
+  onOpenChat?: (dm: InboxDMItem) => void;
+}
+
+export function InboxPage({ onOpenChat }: InboxPageProps) {
   const [layout, setLayout] = useState({ scale: 1, designHeight: 844 });
 
   useEffect(() => {
@@ -61,7 +66,7 @@ export function InboxPage() {
           {/* DM Items */}
           <div className="flex flex-col">
             {mockDMItems.map((item) => (
-              <InboxCell key={item.id} item={item} />
+              <InboxCell key={item.id} item={item} onOpenChat={onOpenChat} />
             ))}
           </div>
         </div>
