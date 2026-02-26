@@ -20,7 +20,7 @@ export function InboxPage({ onOpenChat }: InboxPageProps) {
     <div
       style={{
         position: "fixed",
-        top: layout.offsetTop,
+        top: 0,
         left: 0,
         width: "100%",
         height: layout.viewportHeight,
