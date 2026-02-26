@@ -94,6 +94,7 @@ export const ChatInputBar = forwardRef<ChatInputBarHandle, ChatInputBarProps>(
               value={text}
               onChange={(e) => setText(e.target.value)}
               onKeyDown={handleKeyDown}
+              onFocus={() => { if (isEmojiPanelOpen) onToggleEmojiPanel?.(); }}
               placeholder="Message..."
               className="flex-1 border-none bg-transparent outline-none"
               style={{
