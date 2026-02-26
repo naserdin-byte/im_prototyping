@@ -22,8 +22,6 @@ export const ChatInputBar = forwardRef<ChatInputBarHandle, ChatInputBarProps>(
     useImperativeHandle(ref, () => ({
       insertText: (t: string) => {
         setText((prev) => prev + t);
-        // Keep focus on input after emoji insert
-        inputRef.current?.focus();
       },
     }));
 
