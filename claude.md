@@ -27,12 +27,47 @@ const designHeight = window.innerHeight / scale;
 
 **Do not** use responsive breakpoints or fluid sizing (e.g. `max-w-[480px]`, percentage widths) for page layout. All new pages should follow this scaling pattern.
 
-## NPM Registry
+## NPM / Node Version & Registry
 
-This project uses the **public npm registry** for all dependencies. When running `npm install`, always specify the public registry to avoid lockfile pollution from internal registries:
+This project deploys on **v0 / Vercel**. To ensure compatibility:
+
+### Version constraints
+
+| Tool | Required | Reason |
+|------|----------|--------|
+| Node.js | **≥ 18.18.0** | Next.js 16 minimum; Vercel default runtime |
+| npm | **≥ 9** (lockfileVersion 3) | Matches the existing `package-lock.json` format |
+
+Add the `engines` field in `package.json` if it doesn't exist:
+
+```json
+"engines": {
+  "node": ">=18.18.0",
+  "npm": ">=9"
+}
+```
+
+### Public registry
+
+Always use the **public npm registry** to avoid lockfile pollution from internal registries:
 
 ```bash
 npm install --registry=https://registry.npmjs.org
 ```
 
 This ensures `package-lock.json` contains public `resolved` URLs, which is required for v0/Vercel deployment to work correctly.
+
+### Adding new dependencies
+
+When adding any new package, always run:
+
+```bash
+npm install <package> --registry=https://registry.npmjs.org
+```
+
+After installing, verify no internal URLs leaked into the lockfile:
+
+```bash
+grep -c "registry.npmmirror\|bytedance\|bnpm" package-lock.json
+# Should output: 0
+```
