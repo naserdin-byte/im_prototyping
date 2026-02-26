@@ -197,9 +197,27 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
         background: "#000",
       }}
     >
+      {/* Top safe area (status bar / Dynamic Island) */}
+      {layout.safeAreaTop > 0 && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: layout.safeAreaTop,
+            background: "#F5F5F5",
+            zIndex: 2,
+          }}
+        />
+      )}
+
       <div
         className="relative flex flex-col overflow-hidden"
         style={{
+          position: "absolute",
+          top: layout.safeAreaTop,
+          left: 0,
           width: DESIGN_WIDTH,
           height: layout.designHeight,
           transform: `scale(${layout.scale})`,
@@ -379,6 +397,21 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Bottom safe area (home indicator) */}
+      {layout.safeAreaBottom > 0 && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: layout.safeAreaBottom,
+            background: "#F5F5F5",
+            zIndex: 2,
+          }}
+        />
+      )}
     </div>
   );
 }

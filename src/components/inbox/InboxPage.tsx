@@ -28,9 +28,28 @@ export function InboxPage({ onOpenChat }: InboxPageProps) {
         background: "#000",
       }}
     >
+      {/* Top safe area (status bar / Dynamic Island) */}
+      {layout.safeAreaTop > 0 && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: layout.safeAreaTop,
+            background: "#FFFFFF",
+            zIndex: 2,
+          }}
+        />
+      )}
+
+      {/* Scaled design container — positioned below top safe area */}
       <div
         className="flex flex-col overflow-hidden bg-white"
         style={{
+          position: "absolute",
+          top: layout.safeAreaTop,
+          left: 0,
           width: DESIGN_WIDTH,
           height: layout.designHeight,
           transform: `scale(${layout.scale})`,
@@ -70,6 +89,21 @@ export function InboxPage({ onOpenChat }: InboxPageProps) {
         {/* Bottom Tab Bar */}
         <BottomTabBar />
       </div>
+
+      {/* Bottom safe area (home indicator) */}
+      {layout.safeAreaBottom > 0 && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: layout.safeAreaBottom,
+            background: "#FFFFFF",
+            zIndex: 2,
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -6,8 +6,8 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: "IM",
     start_url: "/",
     display: "standalone",
-    background_color: "#000000",
-    theme_color: "#000000",
+    background_color: "#FFFFFF",
+    theme_color: "#FFFFFF",
     icons: [
       {
         src: "/images/icons/icon-192x192.png",
