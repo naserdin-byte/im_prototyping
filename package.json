@@ -7,7 +7,7 @@
     "npm": ">=10"
   },
   "scripts": {
-    "predev": "if [ -L node_modules ]; then rm node_modules && npm install --prefer-offline 2>/dev/null || npm install; fi",
+    "predev": "echo '[predev] node_modules:' && ls -la node_modules 2>&1 | head -1 && if [ -L node_modules ]; then echo '[predev] SYMLINK detected, replacing...' && rm node_modules && npm install && echo '[predev] DONE'; else echo '[predev] real dir, skip'; fi",
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
