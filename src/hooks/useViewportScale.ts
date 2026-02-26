@@ -5,12 +5,17 @@ import { useState, useEffect, useRef } from "react";
 const DESIGN_WIDTH = 390;
 
 export interface ViewportLayout {
-  /** CSS‑pixel scale factor (viewportWidth / 390) */
+  /** CSS-pixel scale factor (viewportWidth / 390) */
   scale: number;
-  /** Design‑space height (real viewport height / scale) */
+  /** Design-space height (real viewport height / scale) */
   designHeight: number;
-  /** Real CSS‑pixel viewport height — tracks keyboard open/close */
+  /** Real CSS-pixel viewport height — tracks keyboard open/close */
   viewportHeight: number;
+  /**
+   * iOS Safari scrolls the visual viewport when the keyboard opens.
+   * The app container uses this as `top` to follow the visible area.
+   */
+  offsetTop: number;
 }
 
 /**
@@ -18,18 +23,19 @@ export interface ViewportLayout {
  *
  * Uses the **`visualViewport`** API so that `viewportHeight` shrinks
  * when the mobile virtual keyboard opens and grows when it closes.
- * Falls back to `window.innerHeight` on browsers without the API.
+ * Also tracks `offsetTop` — on iOS Safari the visual viewport scrolls
+ * when the keyboard appears; the outer container positions itself at
+ * this offset so it always fills exactly the visible area.
  *
- * Both InboxPage and ChatPage share this hook so the outer container
- * always matches the *visible* area — no document‑level scroll, and
- * the nav bar stays pinned at the top while the input bar stays above
- * the keyboard.
+ * Falls back to `window.innerHeight` / offset 0 on browsers without
+ * the `visualViewport` API.
  */
 export function useViewportScale(): ViewportLayout {
   const [layout, setLayout] = useState<ViewportLayout>({
     scale: 1,
     designHeight: 844,
     viewportHeight: 844,
+    offsetTop: 0,
   });
 
   // Avoid state updates after unmount
@@ -48,12 +54,14 @@ export function useViewportScale(): ViewportLayout {
       const vv = window.visualViewport;
       const w = vv ? vv.width : window.innerWidth;
       const h = vv ? vv.height : window.innerHeight;
+      const top = vv ? vv.offsetTop : 0;
       const scale = w / DESIGN_WIDTH;
 
       setLayout({
         scale,
         designHeight: h / scale,
         viewportHeight: h,
+        offsetTop: top,
       });
     };
 

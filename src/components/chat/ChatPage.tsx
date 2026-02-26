@@ -159,7 +159,8 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
     <div
       style={{
         position: "fixed",
-        inset: 0,
+        top: layout.offsetTop,
+        left: 0,
         width: "100%",
         height: layout.viewportHeight,
         overflow: "hidden",
