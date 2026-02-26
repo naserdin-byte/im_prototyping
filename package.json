@@ -7,7 +7,7 @@
     "npm": ">=10"
   },
   "scripts": {
-    "predev": "echo '[predev] node_modules:' && ls -la node_modules 2>&1 | head -1 && if [ -L node_modules ]; then echo '[predev] SYMLINK detected, replacing...' && rm node_modules && npm install && echo '[predev] DONE'; else echo '[predev] real dir, skip'; fi",
+    "predev": "if [ -d /vercel/share ]; then echo '[predev] v0 sandbox detected, forcing clean install...' && rm -rf node_modules && npm install && echo '[predev] clean install done'; fi",
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
