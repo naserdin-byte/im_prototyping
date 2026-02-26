@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { InboxItem } from "@/types/inbox";
 import { Avatar } from "./Avatar";
 import { InboxLeadingIcon } from "./InboxLeadingIcon";
@@ -18,8 +19,8 @@ export function InboxCell({ item }: InboxCellProps) {
   const messageColor =
     isNotification || item.isUnread ? "text-black" : "text-black/48";
 
-  return (
-    <div className="flex w-full items-center py-2 pr-2 pl-4">
+  const inner = (
+    <>
       {/* Leading */}
       <div className="shrink-0 pr-3">
         {isNotification ? (
@@ -71,6 +72,18 @@ export function InboxCell({ item }: InboxCellProps) {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
+
+  const className = "flex w-full items-center py-2 pr-2 pl-4";
+
+  if (isDM) {
+    return (
+      <Link href="/chat/taoo425" className={className}>
+        {inner}
+      </Link>
+    );
+  }
+
+  return <div className={className}>{inner}</div>;
 }

@@ -37,6 +37,78 @@ const designHeight = window.innerHeight / scale;
 - 如果 Figma 中图标是光栅化的（rasterized / flattened），导出为 PNG（建议 3x）
 - 导出后放入 `public/images/icons/` 目录
 
+## Animations
+
+All animations use **[motion](https://motion.dev)** (package: `motion`, import from `"motion/react"`).
+
+### Import convention
+
+```tsx
+import { motion, AnimatePresence } from "motion/react";
+```
+
+- Use `<motion.div>` / `<motion.button>` etc. for animated elements.
+- Wrap conditionally rendered animated elements with `<AnimatePresence>` for exit animations.
+- Always add a stable `key` prop when the animated element can swap (e.g. reaction emoji changing).
+
+### Spring presets
+
+Use spring physics for all interactive / UI animations. **不要使用** ease / cubic-bezier 缓动。
+
+```ts
+// Fast & snappy — buttons, pills, pop-in elements
+const springPop = { type: "spring", stiffness: 700, damping: 35 };
+
+// Slightly softer — panels, cards, context menus
+const springGentle = { type: "spring", stiffness: 600, damping: 32 };
+```
+
+### Timing guidelines
+
+| Category | Duration / Delay | Notes |
+|---|---|---|
+| Backdrop fade (overlay) | `duration: 0.15` | 简短的 tween，不用 spring |
+| Panel enter/exit | Use `springPop` | scale + y offset |
+| Staggered children | `delay: 0.02 * index` | 每个子元素间隔 20ms |
+| Secondary panel delay | `delay: 0.02` | context menu 等略微延迟 |
+| Reaction pill pop | `springPop` (stiffness 700, damping 30) | scale from 0.3, transformOrigin 在 bubble 角落 |
+
+### Common patterns
+
+```tsx
+// Overlay backdrop (tween, not spring)
+<motion.div
+  initial={{ backgroundColor: "rgba(0,0,0,0)" }}
+  animate={{ backgroundColor: "rgba(0,0,0,0.45)", backdropFilter: "blur(6px)" }}
+  exit={{ backgroundColor: "rgba(0,0,0,0)" }}
+  transition={{ duration: 0.15 }}
+/>
+
+// Panel scale-in
+<motion.div
+  initial={{ opacity: 0, scale: 0.85, y: -12 }}
+  animate={{ opacity: 1, scale: 1, y: 0 }}
+  exit={{ opacity: 0, scale: 0.85, y: -12 }}
+  transition={springPop}
+/>
+
+// Pill pop-in with AnimatePresence
+<AnimatePresence>
+  {value && (
+    <motion.div
+      key={value}
+      initial={{ opacity: 0, scale: 0.3 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.3 }}
+      transition={{ type: "spring", stiffness: 700, damping: 30 }}
+    />
+  )}
+</AnimatePresence>
+
+// Tap feedback
+<motion.button whileTap={{ scale: 1.35 }} />
+```
+
 ## NPM / Node Version & Registry
 
 This project deploys on **v0 / Vercel**. To ensure compatibility:
