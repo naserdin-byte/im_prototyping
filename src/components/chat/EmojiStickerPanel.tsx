@@ -7,6 +7,7 @@ type PanelTab = "favourite" | "emoji" | "stickers";
 
 interface EmojiStickerPanelProps {
   onSelectEmoji: (emoji: string) => void;
+  onSelectSticker?: (stickerSrc: string) => void;
 }
 
 const springPanel = { type: "spring" as const, stiffness: 600, damping: 32 };
@@ -56,7 +57,45 @@ const ALL_EMOJIS = [
   "😱", "😨", "😰", "😥", "😓", "🤗", "🤔", "😤",
 ];
 
-export function EmojiStickerPanel({ onSelectEmoji }: EmojiStickerPanelProps) {
+// ── Sticker data — individual images exported from Figma ──
+const RECENT_STICKERS = [
+  "/images/stickers/sticker-r0.png",
+  "/images/stickers/sticker-r1.png",
+  "/images/stickers/sticker-r2.png",
+];
+
+const FAVOURITE_STICKERS = [
+  "/images/stickers/sticker-f0.png",
+  "/images/stickers/sticker-f1.png",
+  "/images/stickers/sticker-f2.png",
+  "/images/stickers/sticker-f3.png",
+  "/images/stickers/sticker-f4.png",
+  "/images/stickers/sticker-f5.png",
+  "/images/stickers/sticker-f6.png",
+];
+
+const STICKER_SET_ROWS = [
+  [
+    "/images/stickers/sticker-s1-0.png",
+    "/images/stickers/sticker-s1-1.png",
+    "/images/stickers/sticker-s1-2.png",
+    "/images/stickers/sticker-s1-3.png",
+  ],
+  [
+    "/images/stickers/sticker-s2-0.png",
+    "/images/stickers/sticker-s2-1.png",
+    "/images/stickers/sticker-s2-2.png",
+    "/images/stickers/sticker-s2-3.png",
+  ],
+  [
+    "/images/stickers/sticker-s3-0.png",
+    "/images/stickers/sticker-s3-1.png",
+    "/images/stickers/sticker-s3-2.png",
+    "/images/stickers/sticker-s3-3.png",
+  ],
+];
+
+export function EmojiStickerPanel({ onSelectEmoji, onSelectSticker }: EmojiStickerPanelProps) {
   const [activeTab, setActiveTab] = useState<PanelTab>("emoji");
 
   return (
@@ -152,8 +191,12 @@ export function EmojiStickerPanel({ onSelectEmoji }: EmojiStickerPanelProps) {
             {activeTab === "emoji" && (
               <EmojiTabContent onSelectEmoji={onSelectEmoji} />
             )}
-            {activeTab === "favourite" && <FavouriteTabContent />}
-            {activeTab === "stickers" && <StickerSetsTabContent />}
+            {activeTab === "favourite" && (
+              <FavouriteTabContent onSelectSticker={onSelectSticker} />
+            )}
+            {activeTab === "stickers" && (
+              <StickerSetsTabContent onSelectSticker={onSelectSticker} />
+            )}
           </div>
         </div>
       </div>
@@ -220,61 +263,100 @@ function EmojiTabContent({
   );
 }
 
+// ── Sticker Grid — 4-column layout matching Figma (space-between, 72×72 items) ──
+function StickerGrid({
+  stickers,
+  onSelect,
+}: {
+  stickers: string[];
+  onSelect?: (src: string) => void;
+}) {
+  // Split stickers into rows of 4
+  const rows: string[][] = [];
+  for (let i = 0; i < stickers.length; i += 4) {
+    rows.push(stickers.slice(i, i + 4));
+  }
+
+  return (
+    <div className="flex flex-col" style={{ gap: 24 }}>
+      {rows.map((row, rowIdx) => (
+        <div
+          key={rowIdx}
+          className="flex"
+          style={{
+            gap: 0,
+            justifyContent: row.length === 4 ? "space-between" : "flex-start",
+          }}
+        >
+          {row.map((src, i) => (
+            <button
+              key={`${src}-${i}`}
+              onClick={() => onSelect?.(src)}
+              className="flex items-center justify-center"
+              style={{
+                width: 72,
+                height: 72,
+                padding: 0,
+                flexShrink: 0,
+                marginRight: row.length < 4 && i < row.length - 1 ? 24 : 0,
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={src}
+                alt={`Sticker ${rowIdx * 4 + i + 1}`}
+                style={{ width: 72, height: 72, objectFit: "contain" }}
+                draggable={false}
+              />
+            </button>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ── Favourite Tab ──
-function FavouriteTabContent() {
+function FavouriteTabContent({
+  onSelectSticker,
+}: {
+  onSelectSticker?: (src: string) => void;
+}) {
   return (
     <div className="flex flex-col" style={{ gap: 16 }}>
       {/* Recent used stickers */}
       <div className="flex flex-col" style={{ gap: 12 }}>
         <SectionLabel>Recent used</SectionLabel>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/images/icons/sticker-recent-row.png"
-          alt="Recent stickers"
-          style={{ width: 358, height: 72, objectFit: "contain" }}
-        />
+        <StickerGrid stickers={RECENT_STICKERS} onSelect={onSelectSticker} />
       </div>
 
       {/* Favourites stickers */}
       <div className="flex flex-col" style={{ gap: 12 }}>
         <SectionLabel>Favourites</SectionLabel>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/images/icons/sticker-fav-list.png"
-          alt="Favourite stickers"
-          style={{ width: 358, height: 160, objectFit: "contain" }}
-        />
+        <StickerGrid stickers={FAVOURITE_STICKERS} onSelect={onSelectSticker} />
       </div>
     </div>
   );
 }
 
 // ── Sticker Sets Tab ──
-function StickerSetsTabContent() {
+function StickerSetsTabContent({
+  onSelectSticker,
+}: {
+  onSelectSticker?: (src: string) => void;
+}) {
   return (
     <div className="flex flex-col" style={{ gap: 16 }}>
       <div className="flex flex-col" style={{ gap: 12 }}>
         <SectionLabel>Sticker name</SectionLabel>
-        {/* 3 rows of stickers from Figma */}
         <div className="flex flex-col" style={{ gap: 24 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/icons/sticker-set-row1.png"
-            alt="Sticker set row 1"
-            style={{ width: 358, height: 72, objectFit: "contain" }}
-          />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/icons/sticker-set-row2.png"
-            alt="Sticker set row 2"
-            style={{ width: 358, height: 72, objectFit: "contain" }}
-          />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/icons/sticker-set-row3.png"
-            alt="Sticker set row 3"
-            style={{ width: 358, height: 72, objectFit: "contain" }}
-          />
+          {STICKER_SET_ROWS.map((row, rowIdx) => (
+            <StickerGrid
+              key={rowIdx}
+              stickers={row}
+              onSelect={onSelectSticker}
+            />
+          ))}
         </div>
       </div>
     </div>

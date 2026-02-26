@@ -155,6 +155,31 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
     inputBarRef.current?.insertText(emoji);
   }, []);
 
+  /** Send a sticker message and close the panel */
+  const handleStickerSelect = useCallback((stickerSrc: string) => {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes().toString().padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const h12 = hours % 12 || 12;
+    const timeStr = `${h12}:${minutes} ${ampm}`;
+
+    const newMsg: ChatMessage = {
+      id: `m-${Date.now()}`,
+      sender: "me",
+      text: "",
+      sticker: stickerSrc,
+      timestamp: timeStr,
+    };
+
+    setMessages((prev) => {
+      const updated = prev.map((m) =>
+        m.isSeen ? { ...m, isSeen: false } : m
+      );
+      return [...updated, newMsg];
+    });
+  }, []);
+
   const positions = computePositions(messages);
   const pickerMsgIdx = picker ? messages.findIndex((m) => m.id === picker.msgId) : -1;
   const pickerMsg = pickerMsgIdx >= 0 ? messages[pickerMsgIdx] : null;
@@ -335,6 +360,7 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
             <EmojiStickerPanel
               key="emoji-panel"
               onSelectEmoji={handleEmojiSelect}
+              onSelectSticker={handleStickerSelect}
             />
           )}
         </AnimatePresence>

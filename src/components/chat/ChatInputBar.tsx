@@ -81,9 +81,9 @@ export const ChatInputBar = forwardRef<ChatInputBarHandle, ChatInputBarProps>(
             />
           </button>
 
-          {/* Text input pill */}
+          {/* Text input pill — min-w-0 prevents flex item from overflowing */}
           <div
-            className="flex flex-1 items-center"
+            className="flex min-w-0 flex-1 items-center"
             style={{
               height: 36,
               borderRadius: 22,

@@ -109,30 +109,55 @@ export function MessageBubble({
 
       {/* Bubble + reaction column */}
       <div className="flex flex-col" style={{ maxWidth: 260, alignItems: isMe ? "flex-end" : "flex-start" }}>
-        {/* Bubble */}
-        <div
-          onTouchStart={startPress}
-          onTouchEnd={cancelPress}
-          onTouchMove={handleMove}
-          onMouseDown={startPress}
-          onMouseUp={cancelPress}
-          onMouseLeave={cancelPress}
-          onContextMenu={handleContextMenu}
-          style={{
-            padding: "10px 14px",
-            borderRadius: isMe ? getSenderRadius(position) : getReceiverRadius(position),
-            background: isMe ? "#00C8F8" : "#FFFFFF",
-            color: isMe ? "#FFFFFF" : "#000000",
-            fontSize: 16,
-            lineHeight: "1.35em",
-            wordBreak: "break-word",
-            cursor: "pointer",
-            userSelect: "none",
-            WebkitUserSelect: "none",
-          }}
-        >
-          {message.text}
-        </div>
+        {/* Bubble — sticker or text */}
+        {message.sticker ? (
+          <div
+            onTouchStart={startPress}
+            onTouchEnd={cancelPress}
+            onTouchMove={handleMove}
+            onMouseDown={startPress}
+            onMouseUp={cancelPress}
+            onMouseLeave={cancelPress}
+            onContextMenu={handleContextMenu}
+            style={{
+              cursor: "pointer",
+              userSelect: "none",
+              WebkitUserSelect: "none",
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={message.sticker}
+              alt="Sticker"
+              style={{ width: 120, height: 120, objectFit: "contain" }}
+              draggable={false}
+            />
+          </div>
+        ) : (
+          <div
+            onTouchStart={startPress}
+            onTouchEnd={cancelPress}
+            onTouchMove={handleMove}
+            onMouseDown={startPress}
+            onMouseUp={cancelPress}
+            onMouseLeave={cancelPress}
+            onContextMenu={handleContextMenu}
+            style={{
+              padding: "10px 14px",
+              borderRadius: isMe ? getSenderRadius(position) : getReceiverRadius(position),
+              background: isMe ? "#00C8F8" : "#FFFFFF",
+              color: isMe ? "#FFFFFF" : "#000000",
+              fontSize: 16,
+              lineHeight: "1.35em",
+              wordBreak: "break-word",
+              cursor: "pointer",
+              userSelect: "none",
+              WebkitUserSelect: "none",
+            }}
+          >
+            {message.text}
+          </div>
+        )}
 
         {/*
           Reaction pill — Figma spec:

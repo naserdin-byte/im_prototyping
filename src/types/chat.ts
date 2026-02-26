@@ -17,6 +17,8 @@ export interface ChatMessage {
   id: string;
   sender: "me" | "them";
   text: string;
+  /** Image path for sticker messages (no text bubble, just the sticker image) */
+  sticker?: string;
   timestamp?: string; // shown as centered timestamp label above this message
   isSeen?: boolean;   // "Seen" indicator below sender's message
   reaction?: ReactionEmoji; // emoji reaction shown below the bubble
