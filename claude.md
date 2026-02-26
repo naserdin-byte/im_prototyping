@@ -109,6 +109,14 @@ const springGentle = { type: "spring", stiffness: 600, damping: 32 };
 <motion.button whileTap={{ scale: 1.35 }} />
 ```
 
+## Screenshots
+
+开发验证截图统一存放在 **`.screenshots/`** 目录，该目录已被 `.gitignore` 忽略，不会提交到仓库。
+
+- 用 Playwright `browser_take_screenshot` 截图时，文件会保存到项目根目录
+- 验证完成后，将截图移入 `.screenshots/`：`mv *.png .screenshots/`
+- **不要**将截图提交到 git
+
 ## NPM / Node Version & Registry
 
 This project deploys on **v0 / Vercel**. To ensure compatibility:
