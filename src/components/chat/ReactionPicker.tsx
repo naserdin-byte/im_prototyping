@@ -3,6 +3,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { REACTION_EMOJIS, ReactionEmoji, ChatMessage, BubblePosition } from "@/types/chat";
+import { isEmojiOnly } from "./MessageBubble";
 
 interface ReactionPickerProps {
   /** The message being reacted to */
@@ -205,28 +206,103 @@ export function ReactionPicker({
       </motion.div>
 
       {/* ── Message bubble clone ── */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.92 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.92 }}
-        transition={springGentle}
-        style={{
-          alignSelf: isMe ? "flex-end" : "flex-start",
-          maxWidth: 260,
-          padding: "10px 14px",
-          borderRadius: isMe
-            ? getSenderRadius(position)
-            : getReceiverRadius(position),
-          background: isMe ? "#00C8F8" : "#FFFFFF",
-          color: isMe ? "#FFFFFF" : "#000000",
-          fontSize: 16,
-          lineHeight: "1.35em",
-          wordBreak: "break-word",
-          boxShadow: "0px 2px 12px rgba(0,0,0,0.1)",
-        }}
-      >
-        {message.text}
-      </motion.div>
+      {message.sticker ? (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.92 }}
+          transition={springGentle}
+          style={{
+            alignSelf: isMe ? "flex-end" : "flex-start",
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={message.sticker}
+            alt="Sticker"
+            style={{ width: 140, height: 140, objectFit: "contain" }}
+            draggable={false}
+          />
+        </motion.div>
+      ) : message.media ? (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.92 }}
+          transition={springGentle}
+          style={{
+            alignSelf: isMe ? "flex-end" : "flex-start",
+            position: "relative",
+            width: 162,
+            height: 216,
+            borderRadius: 12,
+            overflow: "hidden",
+            boxShadow: "0px 2px 12px rgba(0,0,0,0.1)",
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={message.media.thumbnail}
+            alt=""
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            draggable={false}
+          />
+          {(message.media.type === "shared_post" || message.media.type === "video") && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src="/images/icons/icon-play-fill.svg"
+              alt=""
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: 28,
+                height: 28,
+              }}
+            />
+          )}
+        </motion.div>
+      ) : isEmojiOnly(message.text) ? (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.92 }}
+          transition={springGentle}
+          style={{
+            alignSelf: isMe ? "flex-end" : "flex-start",
+            fontSize: 44,
+            lineHeight: "1.2em",
+            paddingRight: isMe ? 4 : 0,
+            paddingLeft: isMe ? 0 : 4,
+          }}
+        >
+          {message.text}
+        </motion.div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.92 }}
+          transition={springGentle}
+          style={{
+            alignSelf: isMe ? "flex-end" : "flex-start",
+            maxWidth: 260,
+            padding: "10px 12px",
+            borderRadius: isMe
+              ? getSenderRadius(position)
+              : getReceiverRadius(position),
+            background: isMe ? "#00A2C9" : "#FFFFFF",
+            color: isMe ? "#FFFFFF" : "#000000",
+            fontSize: 16,
+            lineHeight: "1.3em",
+            wordBreak: "break-word",
+            boxShadow: "0px 2px 12px rgba(0,0,0,0.1)",
+          }}
+        >
+          {message.text}
+        </motion.div>
+      )}
 
       {/* ── Context menu ── */}
       <motion.div
