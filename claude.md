@@ -35,16 +35,27 @@ This project deploys on **v0 / Vercel**. To ensure compatibility:
 
 | Tool | Required | Reason |
 |------|----------|--------|
-| Node.js | **20.x** | Vercel 已下线 18.x；20.x 是最稳定的 LTS，Next.js 16 完全兼容 |
+| Node.js | **≥ 20** | 本地推荐 20.x LTS；v0 sandbox 运行 24.x，需兼容两者 |
 | npm | **≥ 10** (lockfileVersion 3) | Node 20.x 自带 npm 10.x，匹配 `package-lock.json` 格式 |
 
 Add the `engines` field in `package.json` if it doesn't exist:
 
 ```json
 "engines": {
-  "node": "20.x",
+  "node": ">=20",
   "npm": ">=10"
 }
+```
+
+### v0 sandbox symlink workaround
+
+v0 sandbox 会将 `node_modules` 符号链接到 `/vercel/share/v0-next-shadcn/node_modules`，
+但 Next.js 16 的 Turbopack 不支持跨根 symlink，导致路由编译失败 (404)。
+
+`package.json` 中的 `predev` 脚本会在 `npm run dev` 前自动检测并替换 symlink：
+
+```json
+"predev": "if [ -L node_modules ]; then rm node_modules && npm install --prefer-offline 2>/dev/null || npm install; fi"
 ```
 
 ### Public registry
