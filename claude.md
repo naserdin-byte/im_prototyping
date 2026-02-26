@@ -58,6 +58,34 @@ import Image from "next/image";
 - 如果 Figma 中图标是光栅化的（rasterized / flattened），导出为 PNG（建议 3x）
 - 导出后放入 `public/images/icons/` 目录
 
+## Figma 还原原则：导出 vs 实现
+
+**只有设计稿中本身就是图片资源（icon / illustration / photo）的节点才导出为 SVG/PNG。**
+**UI 布局、文本、列表、网格等必须用代码实现，严禁整块截图当组件用。**
+
+判断标准：
+
+| Figma 节点类型 | 处理方式 | 示例 |
+|---|---|---|
+| Vector / SVG icon | 导出 SVG | 返回箭头、emoji 图标、tab bar icon |
+| 光栅化图片（photo / sticker） | 导出 PNG（3x） | 头像、贴纸、封面图 |
+| 文本 + 布局组合 | **代码实现** | 聊天气泡、输入栏、导航栏、列表 |
+| 含多个子元素的 Frame | **代码实现**，子元素中的图片单独导出 | 贴纸网格 → 代码写 grid，单个贴纸导出 PNG |
+
+**反面案例（禁止）：**
+```
+❌ 把一整行贴纸导出为一张 PNG，然后 <img> 展示 → 不可交互
+❌ 把 tab bar 导出为一张图 → 无法切换 tab
+❌ 把聊天输入栏截图当组件 → 无法输入文字
+```
+
+**正确做法：**
+```
+✅ 贴纸网格：代码实现 grid 布局，每个贴纸单独从 Figma 导出 PNG
+✅ Tab bar：代码实现按钮布局，每个 icon 从 Figma 导出 SVG
+✅ 输入栏：代码实现 flex 布局 + <input>，camera/emoji 等 icon 导出 SVG
+```
+
 ## Animations
 
 All animations use **[motion](https://motion.dev)** (package: `motion`, import from `"motion/react"`).
