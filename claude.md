@@ -249,3 +249,13 @@ After installing, verify no internal URLs leaked into the lockfile:
 grep -c "registry.npmmirror\|bytedance\|bnpm" package-lock.json
 # Should output: 0
 ```
+
+## Figma 还原工作流（强制）
+
+从 Figma 设计稿实现 UI 时，**必须**按以下步骤执行：
+
+1. **先用 `get_figma_data` 拉取完整节点树**，逐层阅读每个节点的 layout 属性（mode、alignItems、alignSelf、justifyContent、gap、padding、sizing）
+2. **把 Figma 的父子嵌套结构 1:1 映射到代码的 DOM 结构**。Figma 是两层容器就写两层 div，不要擅自合并或拆分层级
+3. **逐个属性对照实现**：alignItems、alignSelf、gap、padding、sizing 每个都要对上，不要凭感觉写
+4. **不要自作主张换布局方案**。Figma 写的是 row 就用 flex-direction: row，不要臆测换成 grid 或 column
+5. **改完必须截图验证**，对照 Figma 确认无误
