@@ -60,7 +60,10 @@ export function MessageBubble({
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const movedRef = useRef(false);
 
-  const startPress = useCallback(() => {
+  const startPress = useCallback((e: React.TouchEvent | React.MouseEvent) => {
+    if ("touches" in e) {
+      e.preventDefault();
+    }
     movedRef.current = false;
     timerRef.current = setTimeout(() => {
       if (onLongPress) {
@@ -132,13 +135,14 @@ export function MessageBubble({
               cursor: "pointer",
               userSelect: "none",
               WebkitUserSelect: "none",
-            }}
+              WebkitTouchCallout: "none",
+            } as React.CSSProperties}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={message.sticker}
               alt="Sticker"
-              style={{ width: 140, height: 140, objectFit: "contain" }}
+              style={{ width: 140, height: 140, objectFit: "contain", pointerEvents: "none" }}
               draggable={false}
             />
           </div>
@@ -164,15 +168,16 @@ export function MessageBubble({
               cursor: "pointer",
               userSelect: "none",
               WebkitUserSelect: "none",
+              WebkitTouchCallout: "none",
               flexShrink: 0,
-            }}
+            } as React.CSSProperties}
           >
             {/* Thumbnail */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={message.media.thumbnail}
               alt={message.media.type === "shared_post" ? "Shared post" : message.media.type === "video" ? "Video" : "Photo"}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              style={{ width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }}
               draggable={false}
             />
 
