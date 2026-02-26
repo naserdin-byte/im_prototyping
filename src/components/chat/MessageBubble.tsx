@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useCallback } from "react";
-import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import { ChatMessage, BubblePosition } from "@/types/chat";
 
@@ -97,11 +96,10 @@ export function MessageBubble({
       {!isMe && (
         <div className="shrink-0" style={{ width: 30, marginRight: 8 }}>
           {showAvatar && (
-            <Image
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
               src={contactAvatar}
               alt=""
-              width={30}
-              height={30}
               className="rounded-full object-cover"
               style={{ width: 30, height: 30 }}
             />

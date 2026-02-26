@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { ChatContact } from "@/types/chat";
 
 export interface ChatNavBarProps {
@@ -35,11 +34,10 @@ export function ChatNavBar({ contact, onBack }: ChatNavBarProps) {
 
         {/* Avatar with online dot */}
         <div className="relative" style={{ width: 40, height: 40 }}>
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={contact.avatar}
             alt={contact.name}
-            width={40}
-            height={40}
             className="rounded-full object-cover"
             style={{ width: 40, height: 40 }}
           />

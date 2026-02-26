@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import Image from "next/image";
 import { AnimatePresence } from "motion/react";
 import { ChatNavBar } from "./ChatNavBar";
 import { MessageBubble } from "./MessageBubble";
@@ -188,11 +187,10 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
         >
           {/* Profile header */}
           <div className="flex flex-col items-center gap-4 pb-2 pt-5">
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={contact.avatar}
               alt={contact.name}
-              width={96}
-              height={96}
               className="rounded-full object-cover"
               style={{ width: 96, height: 96 }}
             />

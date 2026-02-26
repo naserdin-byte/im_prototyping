@@ -27,6 +27,27 @@ const designHeight = window.innerHeight / scale;
 
 **Do not** use responsive breakpoints or fluid sizing (e.g. `max-w-[480px]`, percentage widths) for page layout. All new pages should follow this scaling pattern.
 
+## Images
+
+**禁止使用 `next/image`（`<Image>`）**，统一使用原生 `<img>` 标签。
+
+原因：`next/image` 会把图片路由到 `/_next/image?url=...&w=...&q=...` 优化 API，每个尺寸/质量组合生成不同 URL，导致我们在 `next.config.ts` 中为 `/images/*` 设置的长期缓存头完全失效。对于 390px 固定设计宽度的 prototype，图片优化没有必要。
+
+```tsx
+// GOOD — 直接引用 public/ 下的资源，走 CDN 缓存
+<img src="/images/icons/icon-flag.svg" alt="Flag" style={{ width: 24, height: 24 }} />
+
+// BAD — 走 /_next/image 优化 API，缓存失效
+import Image from "next/image";
+<Image src="/images/icons/icon-flag.svg" alt="Flag" width={24} height={24} />
+```
+
+使用 `<img>` 时需加 eslint disable 注释：
+```tsx
+{/* eslint-disable-next-line @next/next/no-img-element */}
+<img src="..." alt="..." />
+```
+
 ## Icons & Assets
 
 **严格从 Figma 设计稿导出 SVG/PNG，禁止自己手写或编造图标。**

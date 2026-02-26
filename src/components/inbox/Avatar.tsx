@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 interface AvatarProps {
   src: string;
   alt: string;
@@ -39,7 +37,8 @@ export function Avatar({
           style={{ padding: "2.5px" }}
         >
           <div className="relative h-full w-full overflow-hidden rounded-full">
-            <Image src={src} alt={alt} fill className="object-cover" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={src} alt={alt} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
         </div>
       </div>
@@ -52,7 +51,8 @@ export function Avatar({
         className="relative h-full w-full overflow-hidden rounded-full"
         style={{ boxShadow: "inset 0 0 0 0.5px rgba(0,0,0,0.12)" }}
       >
-        <Image src={src} alt={alt} fill className="object-cover" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt={alt} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
       </div>
       {isOnline && (
         <div className="absolute bottom-0 right-0 h-[14px] w-[14px] rounded-full border-[2px] border-white bg-[#2AD566]" />

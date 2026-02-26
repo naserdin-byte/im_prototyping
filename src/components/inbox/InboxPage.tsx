@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { NavBar } from "./NavBar";
 import { InboxCell } from "./InboxCell";
 import { BottomTabBar } from "./BottomTabBar";
@@ -44,13 +43,11 @@ export function InboxPage({ onOpenChat }: InboxPageProps) {
         <div className="scrollbar-ios flex-1 overflow-y-auto">
           {/* Story Row */}
           <div className="w-full shrink-0">
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src="/images/skylight.png"
               alt="Stories"
-              width={810}
-              height={306}
               className="h-auto w-full"
-              priority
             />
           </div>
 
