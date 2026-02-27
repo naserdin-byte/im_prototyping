@@ -466,6 +466,7 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
           onSend={handleSend}
           isEmojiPanelOpen={showEmojiPanel}
           onToggleEmojiPanel={handleToggleEmojiPanel}
+          onOpenAlbum={handleOpenAlbum}
         />
 
         {/* Emoji & Sticker Panel — slides up below input bar */}
@@ -490,6 +491,17 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
               onSelectReaction={handleReaction}
               onDelete={handleDelete}
               onClose={() => setPicker(null)}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* ── Album panel overlay ── */}
+        <AnimatePresence>
+          {showAlbumPanel && (
+            <AlbumPanel
+              key="album-panel"
+              onSendPhotos={handleSendPhotos}
+              onClose={handleCloseAlbum}
             />
           )}
         </AnimatePresence>

@@ -10,10 +10,11 @@ interface ChatInputBarProps {
   onSend: (text: string) => void;
   isEmojiPanelOpen?: boolean;
   onToggleEmojiPanel?: () => void;
+  onOpenAlbum?: () => void;
 }
 
 export const ChatInputBar = forwardRef<ChatInputBarHandle, ChatInputBarProps>(
-  function ChatInputBar({ onSend, isEmojiPanelOpen, onToggleEmojiPanel }, ref) {
+  function ChatInputBar({ onSend, isEmojiPanelOpen, onToggleEmojiPanel, onOpenAlbum }, ref) {
     const [text, setText] = useState("");
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -125,7 +126,7 @@ export const ChatInputBar = forwardRef<ChatInputBarHandle, ChatInputBarProps>(
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/images/icons/icon-cta-keyboard.svg" alt="Keyboard" style={{ width: 26, height: 26 }} />
                 </button>
-                <button>
+                <button onClick={onOpenAlbum}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/images/icons/icon-cta-image.svg" alt="Image" style={{ width: 26, height: 26 }} />
                 </button>
@@ -136,9 +137,9 @@ export const ChatInputBar = forwardRef<ChatInputBarHandle, ChatInputBarProps>(
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/images/icons/icon-cta-emoji.svg" alt="Emoji" style={{ width: 26, height: 26 }} />
                 </button>
-                <button>
+                <button onClick={onOpenAlbum}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/images/icons/icon-cta-sticker.svg" alt="Image" style={{ width: 26, height: 26 }} />
+                  <img src="/images/icons/icon-cta-sticker.svg" alt="Album" style={{ width: 26, height: 26 }} />
                 </button>
                 <button>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
