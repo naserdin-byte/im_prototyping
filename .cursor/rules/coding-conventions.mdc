@@ -1,0 +1,137 @@
+---
+description: Images, icons, assets, animations, and Figma export-vs-implement rules for React components
+globs: ["src/**/*.tsx", "src/**/*.ts", "src/**/*.css"]
+alwaysApply: false
+---
+
+# Coding Conventions
+
+## Images
+
+**Do NOT use `next/image` (`<Image>`)**. Always use native `<img>` tags.
+
+Reason: `next/image` routes images through `/_next/image?url=...&w=...&q=...` optimization API, generating different URLs per size/quality combination, which invalidates our long-term cache headers set in `next.config.ts` for `/images/*`. For a 390px fixed-width prototype, image optimization is unnecessary.
+
+```tsx
+// GOOD
+{/* eslint-disable-next-line @next/next/no-img-element */}
+<img src="/images/icons/icon-flag.svg" alt="Flag" style={{ width: 24, height: 24 }} />
+
+// BAD
+import Image from "next/image";
+<Image src="/images/icons/icon-flag.svg" alt="Flag" width={24} height={24} />
+```
+
+Always add eslint disable comment when using `<img>`:
+```tsx
+{/* eslint-disable-next-line @next/next/no-img-element */}
+<img src="..." alt="..." />
+```
+
+## Icons & Assets
+
+**Strictly export SVG/PNG from Figma designs. Never hand-write or fabricate icons.**
+
+- All icons must be exported from Figma design files via Figma MCP tools, preserving original path data
+- **Do NOT** hand-draw SVG paths, cobble together icons, or use placeholders
+- Vectors in Figma -> export as SVG
+- Rasterized images in Figma -> export as PNG (recommend 3x)
+- Save exported files to `public/images/icons/`
+
+## Figma Export vs Code Implementation
+
+**Only export nodes that are image assets (icon / illustration / photo) as SVG/PNG.**
+**UI layout, text, lists, grids must be implemented in code. Never screenshot entire blocks as components.**
+
+| Figma Node Type | How to Handle | Example |
+|---|---|---|
+| Vector / SVG icon | Export SVG | Back arrow, emoji icon, tab bar icon |
+| Rasterized image (photo / sticker) | Export PNG (3x) | Avatar, sticker, cover photo |
+| Text + layout combo | **Code implementation** | Chat bubble, input bar, nav bar, list |
+| Frame with multiple children | **Code implementation**, export child images separately | Sticker grid -> code writes grid, each sticker exported as PNG |
+
+**Forbidden:**
+```
+- Exporting an entire row of stickers as one PNG -> not interactive
+- Exporting tab bar as one image -> can't switch tabs
+- Screenshotting chat input bar as component -> can't type text
+```
+
+**Correct approach:**
+```
+- Sticker grid: code implements grid layout, each sticker individually exported from Figma as PNG
+- Tab bar: code implements button layout, each icon exported from Figma as SVG
+- Input bar: code implements flex layout + <input>, camera/emoji icons exported as SVG
+```
+
+## Animations
+
+All animations use **[motion](https://motion.dev)** (package: `motion`, import from `"motion/react"`).
+
+### Import convention
+
+```tsx
+import { motion, AnimatePresence } from "motion/react";
+```
+
+- Use `<motion.div>` / `<motion.button>` etc. for animated elements.
+- Wrap conditionally rendered animated elements with `<AnimatePresence>` for exit animations.
+- Always add a stable `key` prop when the animated element can swap (e.g. reaction emoji changing).
+
+### Spring presets
+
+Use spring physics for all interactive / UI animations. **Do NOT use** ease / cubic-bezier easing.
+
+```ts
+// Fast & snappy - buttons, pills, pop-in elements
+const springPop = { type: "spring", stiffness: 700, damping: 35 };
+
+// Slightly softer - panels, cards, context menus
+const springGentle = { type: "spring", stiffness: 600, damping: 32 };
+```
+
+### Timing guidelines
+
+| Category | Duration / Delay | Notes |
+|---|---|---|
+| Backdrop fade (overlay) | `duration: 0.15` | Short tween, no spring |
+| Panel enter/exit | Use `springPop` | scale + y offset |
+| Staggered children | `delay: 0.02 * index` | 20ms between each child |
+| Secondary panel delay | `delay: 0.02` | Slight delay for context menu etc |
+| Reaction pill pop | `springPop` (stiffness 700, damping 30) | scale from 0.3, transformOrigin at bubble corner |
+
+### Common patterns
+
+```tsx
+// Overlay backdrop (tween, not spring)
+<motion.div
+  initial={{ backgroundColor: "rgba(0,0,0,0)" }}
+  animate={{ backgroundColor: "rgba(0,0,0,0.45)", backdropFilter: "blur(6px)" }}
+  exit={{ backgroundColor: "rgba(0,0,0,0)" }}
+  transition={{ duration: 0.15 }}
+/>
+
+// Panel scale-in
+<motion.div
+  initial={{ opacity: 0, scale: 0.85, y: -12 }}
+  animate={{ opacity: 1, scale: 1, y: 0 }}
+  exit={{ opacity: 0, scale: 0.85, y: -12 }}
+  transition={springPop}
+/>
+
+// Pill pop-in with AnimatePresence
+<AnimatePresence>
+  {value && (
+    <motion.div
+      key={value}
+      initial={{ opacity: 0, scale: 0.3 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.3 }}
+      transition={{ type: "spring", stiffness: 700, damping: 30 }}
+    />
+  )}
+</AnimatePresence>
+
+// Tap feedback
+<motion.button whileTap={{ scale: 1.35 }} />
+```

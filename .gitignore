@@ -36,6 +36,9 @@ yarn-error.log*
 # screenshots (dev verification)
 /.screenshots/
 
+# MCP config (contains tokens)
+.mcp.json
+
 # vercel
 .vercel
 

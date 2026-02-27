@@ -1,0 +1,85 @@
+---
+description: Project overview, layout scaling, and npm/deployment conventions
+globs:
+alwaysApply: true
+---
+
+# Project Overview
+
+This is a **TikTok-style instant messaging (IM) high-fidelity prototyping project** built with Next.js + React as a single-page application (SPA), using 390px iPhone design width with proportional scaling.
+
+**Prototyping principles:**
+- If a **Figma design** is provided, you must **pixel-perfectly reproduce the Figma design** (pixel-level alignment, property-by-property matching)
+- If only **verbal/text description** is given (no Figma), do your best to reproduce the described interaction and visual effects
+
+### Implemented Pages
+
+> **Maintenance rule: Every time a new feature is merged into the main branch, this section must be updated.**
+> Also update the corresponding section in `CLAUDE.md` to keep both rule files in sync.
+
+**Inbox Page**
+- Top nav bar (new message, filter, search)
+- Stories horizontal scroll bar
+- Notification cells (new followers, activity, system notifications, each with unique icons and colors)
+- DM conversation list (avatar + story ring + online green dot + streak flame + unread badge + message preview + timestamp)
+- Bottom Tab bar (5 tabs)
+
+**Chat Page**
+- Nav bar (back, avatar, nickname, online status, streak flame, action buttons)
+- Message list (auto-scroll to bottom, time stamps by interval, consecutive message corner merging)
+- Message types: text bubble, pure emoji large text, sticker, image, shared post, video
+- Text input bar (auto-expand multi-line input, multiple button state switching)
+- Long-press message: reaction emoji picker (7 emoji + animation) + context menu (reply/forward/copy/delete/report)
+- Reaction bubbles: spring animation below messages
+- Emoji & sticker panel (emoji inserts into input, sticker sends directly, favorites page)
+- Album panel (3-column photo grid, multi-select numbering, Send button, sends as image messages)
+- Read receipt ("Seen")
+- Delete message animation (scale + opacity + height collapse)
+
+## Layout Scaling Rule
+
+All pages use a **design-width-based proportional scaling** strategy to ensure pixel-perfect rendering across any screen size.
+
+- **Design width**: `390px` (iPhone standard)
+- **Scale factor**: `scale = viewportWidth / 390`
+- **Design height**: `designHeight = viewportHeight / scale`
+- **Transform origin**: `top left`
+
+The page is rendered at a fixed 390px width with all elements at design-time sizes, then `transform: scale()` is applied to the outer container to fit the viewport.
+
+```tsx
+const DESIGN_WIDTH = 390;
+
+const scale = window.innerWidth / DESIGN_WIDTH;
+const designHeight = window.innerHeight / scale;
+
+<div style={{
+  width: DESIGN_WIDTH,
+  height: designHeight,
+  transform: `scale(${scale})`,
+  transformOrigin: "top left",
+}}>
+```
+
+**Do not** use responsive breakpoints or fluid sizing (e.g. `max-w-[480px]`, percentage widths) for page layout. All new pages should follow this scaling pattern.
+
+## NPM / Node Version & Registry
+
+This project deploys on **v0 / Vercel**. Node.js >= 20, npm >= 10.
+
+### Public registry
+
+Always use the **public npm registry** to avoid lockfile pollution from internal registries:
+
+```bash
+npm install <package> --registry=https://registry.npmjs.org
+```
+
+This ensures `package-lock.json` contains public `resolved` URLs, which is required for v0/Vercel deployment to work correctly.
+
+After installing, verify no internal URLs leaked into the lockfile:
+
+```bash
+grep -c "registry.npmmirror\|bytedance\|bnpm" package-lock.json
+# Should output: 0
+```

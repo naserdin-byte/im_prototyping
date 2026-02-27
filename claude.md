@@ -10,6 +10,9 @@
 
 ### 已实现的页面与功能
 
+> **维护规则：每当有新功能合入 main 分支，必须同步更新本节内容。**
+> 同时更新 `.cursor/rules/general.mdc` 中对应的 "Implemented Pages" 部分，保持两份规则一致。
+
 **Inbox 页（收件箱）**
 - 顶部导航栏（新消息、筛选、搜索）
 - Stories 横滑栏

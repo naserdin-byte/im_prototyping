@@ -1,0 +1,71 @@
+---
+description: Figma-to-code workflow and UI screenshot verification process. Apply when implementing from Figma designs or verifying UI changes.
+globs:
+alwaysApply: false
+---
+
+# Figma Restoration Workflow (Mandatory)
+
+When implementing UI from Figma designs, you **must** follow these steps:
+
+1. **First use `get_figma_data` to fetch the full node tree**, read each node's layout properties layer by layer (mode, alignItems, alignSelf, justifyContent, gap, padding, sizing)
+2. **Map Figma's parent-child nesting structure 1:1 to the code's DOM structure**. If Figma has two container layers, write two divs in code. Do not merge or split layers on your own
+3. **Implement property by property**: alignItems, alignSelf, gap, padding, sizing - each must match. Do not write by feel
+4. **Do not change the layout approach on your own**. If Figma uses row, use flex-direction: row. Do not speculatively switch to grid or column
+5. **After changes, you must take screenshots to verify**, comparing against Figma to confirm correctness
+
+# UI Verification Process
+
+> **BLOCKER - UI changes without screenshot verification are forbidden to commit.**
+>
+> This is a hard gate, not a suggestion. Before executing `git commit`, the screenshot verification process below must be completed.
+> If you find yourself writing `git add` / `git commit` but haven't executed `browser_take_screenshot` for affected pages in this session, **stop immediately and go verify with screenshots**.
+> "Verified in last session", "changes are small should be fine", "user is rushing to commit" are NOT valid reasons to skip verification.
+
+## Required Steps (All Mandatory)
+
+1. **Start dev server** (if not running)
+2. **Set mobile viewport size**: `browser_resize` -> width: 390, height: 844 (iPhone 14/15 standard)
+3. **Navigate to target page with Playwright**: `browser_navigate` -> `http://localhost:3000`
+4. **Screenshot verify**: `browser_take_screenshot` to capture current viewport
+5. **Export Figma reference screenshot**: Use `download_figma_images` to export the corresponding design node as PNG, save to `.screenshots/`, filename with `figma-` prefix (e.g., `figma-album-selected.png`)
+6. **Compare item by item**: page screenshot vs Figma screenshot - layout, spacing, colors, text, icons, border-radius, font-weight, font-size, check each one. Any discrepancy must be fixed
+7. **If multiple pages/states are affected**, navigate and screenshot each one. Each state needs a corresponding Figma reference screenshot for comparison
+8. **After confirmation**, move screenshots to `.screenshots/`: `mv *.png .screenshots/`
+9. **If issues found**, fix and re-screenshot verify until matching Figma
+10. **Only after all verification passes, may you execute git commit**
+
+## Multi-State Components Must All Be Verified
+
+If a component produces **multiple visual states** based on props (e.g., with/without online status, with/without badge, different content types), **each state must be separately screenshot-verified**. You cannot verify just one state and consider it done.
+
+How to determine: Check which conditional rendering branches exist in the component (`{xxx && ...}`, ternary expressions). Each branch combination corresponds to a visual state that must be covered.
+
+Verification method: Prepare test data for each state in mock data, trigger each via Playwright navigation or interaction and screenshot.
+
+## Impact Scope Check
+
+When modifying a component, **you must find all pages/parent components that reference it** and verify each is not broken.
+
+How to determine: Use `grep` to search for the component's import references, find all consumer pages, screenshot-confirm each page.
+
+## Rules
+
+- **Must verify at mobile size** - First `browser_resize` to 390x844, then screenshot. This project is a mobile prototype; desktop-width screenshots have no reference value
+- **Do not** skip verification and commit directly - UI changes must have screenshot confirmation
+- **Do not** commit screenshots to git - `.screenshots/` is in `.gitignore`
+- Screenshots go in **`.screenshots/`** directory
+- Playwright `browser_take_screenshot` saves to project root by default; move after verification
+- **Screenshot filenames should include state identifiers** to distinguish different visual states
+
+## Pre-Commit Checklist
+
+Before executing `git commit`, go through each item:
+
+- [ ] Does this change involve UI? (changed tsx/css/images -> yes)
+- [ ] If yes -> Has `browser_take_screenshot` been executed for all affected pages in this session?
+- [ ] Has `download_figma_images` been used to export corresponding Figma reference screenshots?
+- [ ] Have page screenshots been compared item-by-item with Figma screenshots (layout, spacing, colors, text, border-radius, font-weight, font-size)?
+- [ ] For multi-state components, has each state been screenshot-verified?
+- [ ] For shared components, have all consumer pages been checked?
+- [ ] All YES above -> can commit. Any NO -> stop and complete verification first.
