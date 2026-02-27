@@ -23,6 +23,8 @@ export interface InboxDMItem {
   isOnline?: boolean;
   hasStoryRing?: boolean;
   storyRead?: boolean;
+  /** Streak flame count — shows 🔥 icon + number next to name */
+  streakCount?: number;
 }
 
 export type InboxItem = InboxNotificationItem | InboxDMItem;

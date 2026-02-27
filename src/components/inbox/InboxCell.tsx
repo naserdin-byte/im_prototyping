@@ -13,10 +13,12 @@ export function InboxCell({ item, onOpenChat }: InboxCellProps) {
   const isNotification = item.type === "notification";
   const isDM = item.type === "dm";
 
+  // Figma: unread → H4-Semibold (600) + P1-Semibold (600) in black
+  //        read   → H4-Regular (400) + P1-Regular (400) in black/48
   const titleWeight =
-    isNotification || item.isUnread ? "font-medium" : "font-normal";
+    isNotification || item.isUnread ? "font-semibold" : "font-normal";
   const messageWeight =
-    isNotification || item.isUnread ? "font-medium" : "font-normal";
+    isNotification || item.isUnread ? "font-semibold" : "font-normal";
   const messageColor =
     isNotification || item.isUnread ? "text-black" : "text-black/48";
 
@@ -41,12 +43,30 @@ export function InboxCell({ item, onOpenChat }: InboxCellProps) {
       {/* Content */}
       <div className="min-w-0 flex-1">
         <div className="flex flex-col gap-[2px]">
-          {/* Title */}
-          <span
-            className={`block truncate text-[15px] leading-[1.3] text-black ${titleWeight}`}
-          >
-            {item.title}
-          </span>
+          {/* Title + optional streak */}
+          <div className="flex items-center gap-1">
+            <span
+              className={`truncate text-[15px] leading-[1.3] text-black ${titleWeight}`}
+            >
+              {item.title}
+            </span>
+            {isDM && item.streakCount != null && (
+              <div className="flex shrink-0 items-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/icons/icon-streak-flame.png"
+                  alt=""
+                  style={{ width: 16, height: 16 }}
+                />
+                <span
+                  className="font-medium"
+                  style={{ fontSize: 15, lineHeight: "1.3em", color: "#FF6613" }}
+                >
+                  {item.streakCount}
+                </span>
+              </div>
+            )}
+          </div>
 
           {/* Message line */}
           <div className="flex items-center">

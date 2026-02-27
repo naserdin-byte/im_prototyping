@@ -41,6 +41,20 @@ export function Avatar({
             <img src={src} alt={alt} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
         </div>
+        {/* Online dot — Figma: 16x16, #4FD22A, 3px white stroke, at (36,36) in 64x64 */}
+        {isOnline && (
+          <div
+            className="absolute rounded-full"
+            style={{
+              width: 16,
+              height: 16,
+              right: 0,
+              bottom: 0,
+              background: "#4FD22A",
+              border: "3px solid #FFFFFF",
+            }}
+          />
+        )}
       </div>
     );
   }
