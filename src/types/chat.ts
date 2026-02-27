@@ -35,6 +35,8 @@ export interface ChatMessage {
   sticker?: string;
   /** Media attachment (shared post, video, or image) — 162×216px */
   media?: ChatMedia;
+  /** Epoch ms when the message was sent — used to compute timestamp visibility */
+  sentAt?: number;
   timestamp?: string; // shown as centered timestamp label above this message
   isSeen?: boolean;   // "Seen" indicator below sender's message
   reaction?: ReactionEmoji; // emoji reaction shown below the bubble

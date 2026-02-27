@@ -7,6 +7,7 @@ import { MessageBubble } from "./MessageBubble";
 import { ChatInputBar, ChatInputBarHandle } from "./ChatInputBar";
 import { ReactionPicker } from "./ReactionPicker";
 import { EmojiStickerPanel } from "./EmojiStickerPanel";
+import { AlbumPanel } from "./AlbumPanel";
 import { useViewportScale } from "@/hooks/useViewportScale";
 import { ChatContact, ChatMessage, BubblePosition, ReactionEmoji } from "@/types/chat";
 
@@ -53,6 +54,7 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
   const [picker, setPicker] = useState<PickerState | null>(null);
   const [deletingMsgId, setDeletingMsgId] = useState<string | null>(null);
   const [showEmojiPanel, setShowEmojiPanel] = useState(false);
+  const [showAlbumPanel, setShowAlbumPanel] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputBarRef = useRef<ChatInputBarHandle>(null);
@@ -64,6 +66,7 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
     setPicker(null);
     setDeletingMsgId(null);
     setShowEmojiPanel(false);
+    setShowAlbumPanel(false);
   }, [initialMessages]);
 
   // Auto-scroll to bottom when messages change
@@ -96,21 +99,28 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
   }, [layout.viewportHeight]);
 
   const handleSend = useCallback((text: string) => {
-    const now = new Date();
+    const nowMs = Date.now();
+    const now = new Date(nowMs);
     const hours = now.getHours();
     const minutes = now.getMinutes().toString().padStart(2, "0");
     const ampm = hours >= 12 ? "PM" : "AM";
     const h12 = hours % 12 || 12;
     const timeStr = `${h12}:${minutes} ${ampm}`;
 
-    const newMsg: ChatMessage = {
-      id: `m-${Date.now()}`,
-      sender: "me",
-      text,
-      timestamp: timeStr,
-    };
-
     setMessages((prev) => {
+      const lastMsg = prev[prev.length - 1];
+      // Show timestamp only when gap from last message > 1 minute
+      const showTimestamp =
+        !lastMsg?.sentAt || (nowMs - lastMsg.sentAt) > 60_000;
+
+      const newMsg: ChatMessage = {
+        id: `m-${nowMs}`,
+        sender: "me",
+        text,
+        sentAt: nowMs,
+        ...(showTimestamp ? { timestamp: timeStr } : {}),
+      };
+
       const updated = prev.map((m) =>
         m.isSeen ? { ...m, isSeen: false } : m
       );
@@ -175,27 +185,81 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
 
   /** Send a sticker message and close the panel */
   const handleStickerSelect = useCallback((stickerSrc: string) => {
-    const now = new Date();
+    const nowMs = Date.now();
+    const now = new Date(nowMs);
     const hours = now.getHours();
     const minutes = now.getMinutes().toString().padStart(2, "0");
     const ampm = hours >= 12 ? "PM" : "AM";
     const h12 = hours % 12 || 12;
     const timeStr = `${h12}:${minutes} ${ampm}`;
 
-    const newMsg: ChatMessage = {
-      id: `m-${Date.now()}`,
-      sender: "me",
-      text: "",
-      sticker: stickerSrc,
-      timestamp: timeStr,
-    };
-
     setMessages((prev) => {
+      const lastMsg = prev[prev.length - 1];
+      const showTimestamp =
+        !lastMsg?.sentAt || (nowMs - lastMsg.sentAt) > 60_000;
+
+      const newMsg: ChatMessage = {
+        id: `m-${nowMs}`,
+        sender: "me",
+        text: "",
+        sticker: stickerSrc,
+        sentAt: nowMs,
+        ...(showTimestamp ? { timestamp: timeStr } : {}),
+      };
+
       const updated = prev.map((m) =>
         m.isSeen ? { ...m, isSeen: false } : m
       );
       return [...updated, newMsg];
     });
+  }, []);
+
+  /** Open the album panel — close emoji panel if open */
+  const handleOpenAlbum = useCallback(() => {
+    if (showEmojiPanel) setShowEmojiPanel(false);
+    setShowAlbumPanel(true);
+  }, [showEmojiPanel]);
+
+  /** Close the album panel */
+  const handleCloseAlbum = useCallback(() => {
+    setShowAlbumPanel(false);
+  }, []);
+
+  /** Send selected photos from album panel as image messages */
+  const handleSendPhotos = useCallback((photoSrcs: string[]) => {
+    const nowMs = Date.now();
+    const now = new Date(nowMs);
+    const hours = now.getHours();
+    const minutes = now.getMinutes().toString().padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const h12 = hours % 12 || 12;
+    const timeStr = `${h12}:${minutes} ${ampm}`;
+
+    setMessages((prev) => {
+      const lastMsg = prev[prev.length - 1];
+      const showTimestamp =
+        !lastMsg?.sentAt || (nowMs - lastMsg.sentAt) > 60_000;
+
+      const updated = prev.map((m) =>
+        m.isSeen ? { ...m, isSeen: false } : m
+      );
+
+      const newMsgs: ChatMessage[] = photoSrcs.map((src, idx) => ({
+        id: `m-${nowMs}-${idx}`,
+        sender: "me" as const,
+        text: "",
+        sentAt: nowMs + idx,
+        media: {
+          type: "image" as const,
+          thumbnail: src,
+        },
+        // Only first photo in batch gets timestamp
+        ...(idx === 0 && showTimestamp ? { timestamp: timeStr } : {}),
+      }));
+
+      return [...updated, ...newMsgs];
+    });
+    setShowAlbumPanel(false);
   }, []);
 
   const positions = computePositions(messages);
