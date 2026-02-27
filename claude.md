@@ -158,20 +158,26 @@ const springGentle = { type: "spring", stiffness: 600, damping: 32 };
 <motion.button whileTap={{ scale: 1.35 }} />
 ```
 
-## UI 验证流程（必须执行）
+## UI 验证流程
 
-每次修改 UI 后，**必须**通过 Playwright 截图验证渲染结果，确认无误后再继续。
+> **BLOCKER — 未经截图验证的 UI 改动禁止 commit。**
+>
+> 这是硬性门控，不是建议。执行 `git commit` 之前，必须已经完成下方的截图验证流程。
+> 如果你发现自己正在写 `git add` / `git commit` 但还没有在本次会话中对受影响页面执行过 `browser_take_screenshot`，**立即停下来，先去截图验证**。
+> "上次会话已经验证过"、"改动很小应该没问题"、"用户催着要提交" 都不是跳过验证的理由。
 
-### 步骤
+### 必须执行的步骤（缺一不可）
 
 1. **启动 dev server**（如未运行）
 2. **设置手机视口尺寸**：`browser_resize` → width: 390, height: 844（iPhone 14/15 标准尺寸）
 3. **用 Playwright 导航到目标页面**：`browser_navigate` → `http://localhost:3000`
 4. **截图验证**：`browser_take_screenshot` 截取当前视口
-5. **逐项检查**截图是否与预期一致（布局、间距、颜色、文字、图标）
-6. **如有多个页面/状态受影响**，逐一导航并截图（如 Inbox → Chat → 长按 → Emoji 面板）
-7. **确认无误后**，将截图移入 `.screenshots/`：`mv *.png .screenshots/`
-8. **如发现问题**，修复后重新截图验证，直到正确
+5. **导出 Figma 参考截图**：用 `download_figma_images` 把对应设计稿节点导出为 PNG，保存到 `.screenshots/`，文件名带 `figma-` 前缀（如 `figma-album-selected.png`）
+6. **逐项对比**页面截图与 Figma 截图：布局、间距、颜色、文字、图标、圆角、字重、字号，逐一核对，发现差异必须修复
+7. **如有多个页面/状态受影响**，逐一导航并截图，每个状态都要有对应的 Figma 参考截图做对比
+8. **确认无误后**，将截图移入 `.screenshots/`：`mv *.png .screenshots/`
+9. **如发现问题**，修复后重新截图验证，直到与 Figma 一致
+10. **验证全部通过后，才允许执行 git commit**
 
 ### 多状态组件必须全部验证
 
@@ -195,6 +201,18 @@ const springGentle = { type: "spring", stiffness: 600, damping: 32 };
 - 截图文件统一存放在 **`.screenshots/`** 目录
 - 用 Playwright `browser_take_screenshot` 截图时，文件默认保存到项目根目录，验证后移走
 - **截图文件名应包含状态标识**，便于区分不同视觉状态的验证结果
+
+### 自查清单（commit 前逐条确认）
+
+在执行 `git commit` 之前，逐条过一遍：
+
+- [ ] 本次改动涉及 UI 吗？（改了 tsx/css/图片 → 是）
+- [ ] 是 → 本次会话中是否已经对所有受影响页面执行了 `browser_take_screenshot`？
+- [ ] 是否已用 `download_figma_images` 导出了对应的 Figma 参考截图？
+- [ ] 是否已将页面截图与 Figma 截图逐项对比（布局、间距、颜色、文字、圆角、字重、字号）？
+- [ ] 多状态组件是否每种状态都截图验证了？
+- [ ] 共享组件是否检查了所有消费方页面？
+- [ ] 以上全部 YES → 可以 commit。任一项 NO → 停下来先完成验证。
 
 
 ## NPM / Node Version & Registry
