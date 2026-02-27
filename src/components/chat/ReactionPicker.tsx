@@ -14,6 +14,7 @@ interface ReactionPickerProps {
   designHeight: number;
 
   onSelectReaction: (emoji: ReactionEmoji) => void;
+  onDelete: () => void;
   onClose: () => void;
 }
 
@@ -22,11 +23,12 @@ const MENU_ITEMS: {
   label: string;
   icon: string;
   destructive?: boolean;
+  action?: string;
 }[] = [
   { label: "Reply", icon: "/images/icons/icon-menu-reply.svg" },
   { label: "Forward", icon: "/images/icons/icon-menu-forward.svg" },
   { label: "Copy", icon: "/images/icons/icon-menu-copy.svg" },
-  { label: "Delete for me", icon: "/images/icons/icon-menu-delete.svg", destructive: true },
+  { label: "Delete for me", icon: "/images/icons/icon-menu-delete.svg", destructive: true, action: "delete" },
   { label: "Report", icon: "/images/icons/icon-menu-report.svg", destructive: true },
 ];
 
@@ -57,6 +59,7 @@ export function ReactionPicker({
   position,
   designHeight,
   onSelectReaction,
+  onDelete,
   onClose,
 }: ReactionPickerProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -326,7 +329,7 @@ export function ReactionPicker({
           <motion.button
             key={item.label}
             whileTap={{ backgroundColor: "rgba(0,0,0,0.05)" }}
-            onClick={onClose}
+            onClick={item.action === "delete" ? onDelete : onClose}
             className="flex items-center gap-2 rounded-lg"
             style={{
               padding: 14,

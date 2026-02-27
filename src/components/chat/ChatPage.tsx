@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { ChatNavBar } from "./ChatNavBar";
 import { MessageBubble } from "./MessageBubble";
 import { ChatInputBar, ChatInputBarHandle } from "./ChatInputBar";
@@ -51,6 +51,7 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
   const layout = useViewportScale();
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [picker, setPicker] = useState<PickerState | null>(null);
+  const [deletingMsgId, setDeletingMsgId] = useState<string | null>(null);
   const [showEmojiPanel, setShowEmojiPanel] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -61,6 +62,7 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
   useEffect(() => {
     setMessages(initialMessages);
     setPicker(null);
+    setDeletingMsgId(null);
     setShowEmojiPanel(false);
   }, [initialMessages]);
 
@@ -139,6 +141,22 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
     },
     [picker],
   );
+
+  /** Delete message — close picker, animate out, then remove from state */
+  const handleDelete = useCallback(() => {
+    if (!picker) return;
+    const msgId = picker.msgId;
+    setPicker(null);
+    // Start delete animation after picker exit
+    setTimeout(() => {
+      setDeletingMsgId(msgId);
+      // Remove from state after animation finishes
+      setTimeout(() => {
+        setMessages((prev) => prev.filter((m) => m.id !== msgId));
+        setDeletingMsgId(null);
+      }, 300);
+    }, 80);
+  }, [picker]);
 
   /** Toggle the emoji & sticker panel */
   const handleToggleEmojiPanel = useCallback(() => {
@@ -309,9 +327,23 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
               const isGroupContinuation =
                 pos === "middle" || pos === "bottom";
               const gapTop = i === 0 ? 0 : isGroupContinuation ? 4 : 10;
+              const isDeleting = deletingMsgId === msg.id;
 
               return (
-                <div key={msg.id} style={{ marginTop: gapTop }}>
+                <motion.div
+                  key={msg.id}
+                  style={{ marginTop: gapTop, overflow: "hidden" }}
+                  animate={
+                    isDeleting
+                      ? { opacity: 0, height: 0, marginTop: 0, scale: 0.8 }
+                      : { opacity: 1, height: "auto", scale: 1 }
+                  }
+                  transition={
+                    isDeleting
+                      ? { duration: 0.28, ease: [0.4, 0, 0.2, 1] }
+                      : { duration: 0 }
+                  }
+                >
                   {/* Timestamp */}
                   {msg.timestamp && (
                     <div
@@ -357,7 +389,7 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
                       </span>
                     </div>
                   )}
-                </div>
+                </motion.div>
               );
             })}
             <div ref={bottomRef} />
@@ -392,10 +424,12 @@ export function ChatPage({ contact, initialMessages, onBack }: ChatPageProps) {
               position={pickerPos}
               designHeight={layout.designHeight}
               onSelectReaction={handleReaction}
+              onDelete={handleDelete}
               onClose={() => setPicker(null)}
             />
           )}
         </AnimatePresence>
+
       </div>
 
       {/* Bottom safe area (home indicator) */}
