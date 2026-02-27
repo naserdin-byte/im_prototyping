@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { InboxPage } from "@/components/inbox/InboxPage";
 import { ChatPage } from "@/components/chat/ChatPage";
 import { InboxDMItem } from "@/types/inbox";
@@ -26,6 +26,18 @@ export default function Home() {
   const handleBack = useCallback(() => {
     setActiveChat(null);
   }, []);
+
+  // Sync theme-color meta tag so iOS Safari status bar matches page background
+  useEffect(() => {
+    const color = activeChat ? "#F5F5F5" : "#FFFFFF";
+    let meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.name = "theme-color";
+      document.head.appendChild(meta);
+    }
+    meta.content = color;
+  }, [activeChat]);
 
   if (activeChat) {
     return (

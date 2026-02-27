@@ -21,30 +21,14 @@ body {
   overscroll-behavior: none;
 }
 
-/* iOS-style scrollbar */
+/*
+ * iOS-style scrollbar — real iOS Safari uses overlay scrollbars that
+ * never occupy layout space. Hide the scrollbar completely so content
+ * fills the full 390px design width. Touch-scroll still works.
+ */
 .scrollbar-ios {
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
+  scrollbar-width: none;          /* Firefox */
 }
-
 .scrollbar-ios::-webkit-scrollbar {
-  width: 2.5px;
-}
-
-.scrollbar-ios::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollbar-ios::-webkit-scrollbar-thumb {
-  background: transparent;
-  border-radius: 9999px;
-}
-
-.scrollbar-ios:hover::-webkit-scrollbar-thumb,
-.scrollbar-ios:active::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-}
-
-.scrollbar-ios::-webkit-scrollbar-thumb:active {
-  background: rgba(0, 0, 0, 0.35);
+  display: none;                  /* Chrome / Safari / Playwright */
 }
