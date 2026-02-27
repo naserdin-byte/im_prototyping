@@ -5,23 +5,42 @@ export interface ChatNavBarProps {
   onBack?: () => void;
 }
 
+/**
+ * Chat page nav bar — 1:1 mapping of Figma node 1518-530243.
+ *
+ * Figma structure (layout_RVCS1K):
+ *   <row w=390 h=56 alignItems=center>
+ *     <back-area  padding="16 12 16 16"  hug × fill>   ← chevron 24×24
+ *     <avatar+text  gap=8  fill × fill>
+ *       <avatar 40×40>
+ *       <text-col  justify-center  fill × hug>
+ *         <name-row  gap=4  alignItems=center  hug>
+ *           <name H3-Bold 17/1.3 #000>
+ *           <streak-row  alignItems=center  hug>
+ *             <flame 16×16>
+ *             <count H4-Medium 15/1.3 #FF6613>
+ *         <subtitle P3-Regular 12/1.3 rgba(0,0,0,0.48)>  ← only when active
+ *     <right-area  padding="16 16 16 12"  gap=16  hug × fill>
+ *       <flag 24×24>
+ *       <ellipsis 24×24>
+ */
 export function ChatNavBar({ contact, onBack }: ChatNavBarProps) {
   return (
     <div
-      className="relative shrink-0"
+      className="shrink-0"
       style={{
         height: 56,
         background: "#F5F5F5",
         borderBottom: "0.5px solid rgba(0,0,0,0.12)",
       }}
     >
-      {/* Left: Back + Avatar */}
-      <div className="absolute left-0 top-0 flex h-full items-center">
-        {/* Back button */}
+      {/* Main row — Figma: layout_RVCS1K, row, alignItems center, w=390 */}
+      <div className="flex items-center" style={{ width: 390, height: 56 }}>
+        {/* ── Back area — Figma: layout_QE6HXJ, padding 16 12 16 16, hug × fill ── */}
         <button
           onClick={onBack}
-          className="flex items-center justify-center"
-          style={{ width: 52, height: 56 }}
+          className="flex shrink-0 items-center self-stretch"
+          style={{ padding: "16px 12px 16px 16px" }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -32,97 +51,112 @@ export function ChatNavBar({ contact, onBack }: ChatNavBarProps) {
           />
         </button>
 
-        {/* Avatar with online dot */}
-        <div className="relative" style={{ width: 40, height: 40 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={contact.avatar}
-            alt={contact.name}
-            className="rounded-full object-cover"
-            style={{ width: 40, height: 40 }}
-          />
-          {/* Inner stroke */}
-          <div
-            className="pointer-events-none absolute inset-0 rounded-full"
-            style={{ boxShadow: "inset 0 0 0 0.5px rgba(0,0,0,0.05)" }}
-          />
-          {/* Online dot */}
-          {contact.isActive && (
-            <div
-              className="absolute"
-              style={{
-                width: 12,
-                height: 12,
-                right: -1,
-                bottom: -1,
-                borderRadius: "50%",
-                background: "#1DD765",
-                border: "2.5px solid #F8F8F8",
-              }}
+        {/* ── Avatar + Text area — Figma: layout_7KZZDB, row, gap 8, fill × fill ── */}
+        <div
+          className="flex flex-1 items-center self-stretch"
+          style={{ gap: 8 }}
+        >
+          {/* Avatar 40×40 with optional online dot */}
+          <div className="relative shrink-0" style={{ width: 40, height: 40 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={contact.avatar}
+              alt={contact.name}
+              className="rounded-full object-cover"
+              style={{ width: 40, height: 40 }}
             />
-          )}
-        </div>
-      </div>
-
-      {/* Center: Name + streak + subtitle */}
-      <div
-        className="absolute flex flex-col justify-center"
-        style={{ left: 100, top: 9, width: 198 }}
-      >
-        <div className="flex items-center gap-1">
-          <span
-            className="font-bold text-black"
-            style={{ fontSize: 17, lineHeight: "1.3em" }}
-          >
-            {contact.name}
-          </span>
-          {contact.streakCount != null && (
-            <div className="flex items-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/icons/icon-streak-flame.png"
-                alt="Streak"
-                width={16}
-                height={16}
-              />
-              <span
-                className="font-medium"
+            {/* Inner stroke */}
+            <div
+              className="pointer-events-none absolute inset-0 rounded-full"
+              style={{ boxShadow: "inset 0 0 0 0.5px rgba(0,0,0,0.05)" }}
+            />
+            {/* Online dot — Figma: 12×12, #1DD765, 2.5px #F8F8F8 stroke, content-box */}
+            {contact.isActive && (
+              <div
+                className="absolute rounded-full"
                 style={{
-                  fontSize: 15,
+                  boxSizing: "content-box",
+                  width: 12,
+                  height: 12,
+                  right: -3.5,
+                  bottom: -3.5,
+                  background: "#1DD765",
+                  border: "2.5px solid #F8F8F8",
+                }}
+              />
+            )}
+          </div>
+
+          {/* Text column — Figma: layout_IGCP5I, column, justify-center, fill × hug */}
+          <div className="flex min-w-0 flex-1 flex-col justify-center">
+            {/* Name row — Figma: layout_961K6V, row, alignItems center, gap 4 */}
+            <div className="flex items-center" style={{ gap: 4 }}>
+              <span
+                className="truncate"
+                style={{
+                  fontWeight: 700,
+                  fontSize: 17,
                   lineHeight: "1.3em",
-                  color: "#FF6613",
+                  color: "#000000",
                 }}
               >
-                {contact.streakCount}
+                {contact.name}
               </span>
+              {/* Streak — Figma: layout_3MFBQU, row, alignItems center */}
+              {contact.streakCount != null && (
+                <div className="flex shrink-0 items-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/icons/icon-streak-flame.png"
+                    alt=""
+                    style={{ width: 16, height: 16 }}
+                  />
+                  <span
+                    style={{
+                      fontWeight: 500,
+                      fontSize: 15,
+                      lineHeight: "1.3em",
+                      letterSpacing: "0.004em",
+                      color: "#FF6613",
+                    }}
+                  >
+                    {contact.streakCount}
+                  </span>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-        <span
-          style={{
-            fontSize: 12,
-            lineHeight: "1.3em",
-            color: "rgba(0,0,0,0.48)",
-            letterSpacing: "0.013em",
-          }}
-        >
-          Active now
-        </span>
-      </div>
 
-      {/* Right: Flag + Ellipsis */}
-      <div
-        className="absolute right-0 top-0 flex h-full items-center gap-4"
-        style={{ paddingRight: 16 }}
-      >
-        <button className="flex items-center justify-center" style={{ width: 24, height: 24 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/icons/icon-flag.svg" alt="Flag" width={24} height={24} />
-        </button>
-        <button className="flex items-center justify-center" style={{ width: 24, height: 24 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/icons/icon-ellipsis.svg" alt="More" width={24} height={24} />
-        </button>
+            {/* Subtitle — Figma: layout_GV1MEY, P3-Regular, only when active */}
+            {contact.isActive && (
+              <span
+                style={{
+                  fontWeight: 400,
+                  fontSize: 12,
+                  lineHeight: "1.3em",
+                  letterSpacing: "0.013em",
+                  color: "rgba(0,0,0,0.48)",
+                }}
+              >
+                Active now
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* ── Right icons — Figma: layout_WBADLP, padding 16 16 16 12, gap 16, hug × fill ── */}
+        <div
+          className="flex shrink-0 items-center self-stretch"
+          style={{ padding: "16px 16px 16px 12px", gap: 16 }}
+        >
+          <button className="flex items-center justify-center" style={{ width: 24, height: 24 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/icons/icon-flag.svg" alt="Flag" width={24} height={24} />
+          </button>
+          <button className="flex items-center justify-center" style={{ width: 24, height: 24 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/icons/icon-ellipsis.svg" alt="More" width={24} height={24} />
+          </button>
+        </div>
       </div>
     </div>
   );

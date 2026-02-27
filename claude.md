@@ -173,6 +173,20 @@ const springGentle = { type: "spring", stiffness: 600, damping: 32 };
 7. **确认无误后**，将截图移入 `.screenshots/`：`mv *.png .screenshots/`
 8. **如发现问题**，修复后重新截图验证，直到正确
 
+### 多状态组件必须全部验证
+
+如果一个组件根据 props 产生**多种视觉状态**（如有/无在线状态、有/无徽章、不同内容类型等），**每种状态都必须单独截图验证**，不能只验证其中一种就认为完成。
+
+判断方法：检查组件中有哪些条件渲染分支（`{xxx && ...}`、三元表达式），每个分支组合对应一个视觉状态，都要覆盖到。
+
+验证方式：在 mock 数据中为每种状态准备对应的测试数据，通过 Playwright 导航或交互逐一触发并截图。
+
+### 影响范围检查
+
+修改一个组件时，**必须找到所有引用它的页面/父组件**，逐一验证没有被破坏。
+
+判断方法：用 `grep` 搜索该组件的 import 引用，找到所有消费方页面，每个页面都截图确认。
+
 ### 规则
 
 - **必须使用手机尺寸验证** — 先 `browser_resize` 到 390×844，再截图。本项目是移动端 prototype，桌面宽度下的截图没有参考价值
@@ -180,6 +194,7 @@ const springGentle = { type: "spring", stiffness: 600, damping: 32 };
 - **不要**将截图提交到 git — `.screenshots/` 已在 `.gitignore` 中
 - 截图文件统一存放在 **`.screenshots/`** 目录
 - 用 Playwright `browser_take_screenshot` 截图时，文件默认保存到项目根目录，验证后移走
+- **截图文件名应包含状态标识**，便于区分不同视觉状态的验证结果
 
 
 ## NPM / Node Version & Registry

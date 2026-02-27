@@ -12,7 +12,7 @@ export function dmItemToContact(item: InboxDMItem): ChatContact {
     name: item.title,
     handle,
     avatar: item.avatar,
-    streakCount: undefined,
+    streakCount: item.streakCount,
     isActive: item.isOnline ?? false,
     stats: "",
     mutualInfo: "",
