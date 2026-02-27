@@ -1,5 +1,34 @@
 # Project Guidelines
 
+## 项目概述
+
+这是一个 **TikTok 风格即时通讯（IM）高保真 Prototyping 项目**，使用 Next.js + React 构建为单页应用（SPA），以 390px iPhone 设计宽度做等比缩放适配。
+
+**Prototyping 原则：**
+- 如果提供了 **Figma 设计稿**，则必须 **完全还原 Figma 设计**（像素级对齐，逐属性对照）
+- 如果提出了 **口头/文字描述的 prototyping 需求**（无 Figma），则尽力还原描述的交互与视觉效果
+
+### 已实现的页面与功能
+
+**Inbox 页（收件箱）**
+- 顶部导航栏（新消息、筛选、搜索）
+- Stories 横滑栏
+- 通知 cells（新关注、活动、系统通知，各有独立图标和配色）
+- DM 会话列表（头像 + story 圈 + 在线绿点 + 连续互动火焰 + 未读徽章 + 消息预览 + 时间戳）
+- 底部 Tab 栏（5 个 tab）
+
+**Chat 页（聊天）**
+- 导航栏（返回、头像、昵称、在线状态、连续互动火焰、操作按钮）
+- 消息列表（自动滚动到底部、按时间间隔显示时间戳、连续消息圆角合并）
+- 消息类型：文本气泡、纯 emoji 大字、贴纸、图片、分享帖子、视频
+- 文本输入栏（自动扩高多行输入、多种按钮状态切换）
+- 长按消息：反应表情选择器（7 个 emoji + 动画）+ 上下文菜单（回复/转发/复制/删除/举报）
+- 反应气泡：弹簧动画显示在消息下方
+- Emoji & 贴纸面板（emoji 插入输入框、贴纸直接发送、收藏页）
+- 相册面板（3 列照片网格、多选编号、Send 按钮、发送为图片消息）
+- 已读标记（"Seen"）
+- 删除消息动画（缩放 + 透明 + 高度坍缩）
+
 ## Layout Scaling Rule
 
 All pages use a **design-width-based proportional scaling** strategy to ensure pixel-perfect rendering across any screen size.
